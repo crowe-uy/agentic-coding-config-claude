@@ -23,15 +23,18 @@ def leer_evento() -> dict:
 
 
 def raiz_del_proyecto(evento: dict) -> Path | None:
-    """Devuelve la raíz del proyecto de automatización, o None si no lo es.
+    """Devuelve la raíz del proyecto que el plugin debe proteger, o None si no aplica.
 
-    Un proyecto de automatización se reconoce por tener docs/bitacora.md.
-    Fuera de uno, los controles no se aplican: el plugin no debe estorbar en
-    otros repositorios.
+    Dos casos: un proyecto de automatización (tiene docs/bitacora.md) o este
+    mismo repo de configuración (tiene .claude-plugin/marketplace.json, la
+    raíz del marketplace). Fuera de los dos, los controles no se aplican: el
+    plugin no debe estorbar en otros repositorios.
     """
     inicio = Path(evento.get("cwd") or Path.cwd())
     for carpeta in [inicio, *list(inicio.parents)[:NIVELES_A_REVISAR]]:
         if (carpeta / "docs" / "bitacora.md").exists():
+            return carpeta
+        if (carpeta / ".claude-plugin" / "marketplace.json").exists():
             return carpeta
     return None
 
