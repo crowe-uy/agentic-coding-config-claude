@@ -78,6 +78,13 @@ Configuración recomendada, a aplicar por quien administre el repositorio:
 - `dev`: PR obligatorio, sin push directo.
 - `CODEOWNERS` asigna `docs/diseno/` y `docs/manual-usuario.md` al referente técnico, para que las dos aprobaciones del ciclo pasen por él.
 
+**Si el repositorio es privado y la organización está en el plan Free de GitHub**, ni la protección de ramas clásica ni los Rulesets están disponibles — GitHub devuelve 403 pidiendo upgrade a Pro/Team, incluso con permisos de administrador. Sin eso, quedan dos capas en vez de tres:
+
+1. `guardia_git.py` del plugin bloquea commit/push directo a `main`/`dev` **dentro de una sesión de Claude Code**. No frena `git` usado fuera de Claude Code.
+2. `CODEOWNERS` sigue sirviendo aunque no bloquee nada: GitHub solicita automáticamente la revisión del referente técnico en cada PR que toque `docs/diseno/` o `docs/manual-usuario.md`.
+
+En ese caso, mantener el ciclo depende de la disciplina del equipo, no de un bloqueo del servidor. Subir a GitHub Team (pago por asiento) es la única forma de recuperar el enforcement real.
+
 ## Qué nunca entra al repositorio
 
 El documento de relevamiento, archivos `.env`, credenciales, certificados, datos reales de clientes y capturas con información sensible. El detalle y los controles automáticos están en [seguridad.md](seguridad.md).
