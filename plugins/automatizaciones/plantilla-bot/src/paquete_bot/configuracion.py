@@ -16,6 +16,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from .entorno import raiz_ejecucion
 from .errores import ErrorConfiguracion
 
 # Orden de prioridad al buscar el archivo de entorno. Ninguno se versiona
@@ -27,9 +28,14 @@ ARCHIVOS_ENTORNO = (".env.local", ".env.dev", ".env")
 
 
 def _archivo_entorno() -> Path | None:
-    """Devuelve el primer archivo de entorno que exista, según la prioridad."""
+    """Devuelve el primer archivo de entorno que exista, según la prioridad.
+
+    Busca junto al .exe si está empaquetado, o en el directorio de trabajo
+    si corre desde código fuente — ver `entorno.raiz_ejecucion`.
+    """
+    base = raiz_ejecucion()
     for nombre in ARCHIVOS_ENTORNO:
-        ruta = Path(nombre)
+        ruta = base / nombre
         if ruta.exists():
             return ruta
     return None
@@ -101,7 +107,7 @@ def cargar_configuracion() -> Configuracion:
     if archivo:
         load_dotenv(archivo)
 
-    salida = Path(obtener_variable("CARPETA_SALIDA", "salida"))
+    salida = Path(obtener_variable("CARPETA_SALIDA", str(raiz_ejecucion() / "salida")))
     salida.mkdir(parents=True, exist_ok=True)
 
     return Configuracion(

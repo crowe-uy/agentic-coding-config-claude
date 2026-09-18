@@ -12,6 +12,8 @@ from datetime import datetime
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
+from .entorno import raiz_ejecucion
+
 FORMATO = "%(asctime)s | %(id_ejecucion)s | %(levelname)-8s | %(name)s | %(message)s"
 
 _id_ejecucion = ""
@@ -31,17 +33,19 @@ class _FiltroIdEjecucion(logging.Filter):
 
 
 def configurar_registro(
-    carpeta_logs: Path = Path("logs"),
+    carpeta_logs: Path | None = None,
     nivel: int = logging.INFO,
     id_ejecucion: str | None = None,
 ) -> str:
     """Configura el registro global y devuelve el id de ejecución.
 
-    Debe llamarse una sola vez, al inicio de la corrida.
+    Debe llamarse una sola vez, al inicio de la corrida. Sin `carpeta_logs`,
+    usa `logs/` anclada a `entorno.raiz_ejecucion()`.
     """
     global _id_ejecucion
     _id_ejecucion = id_ejecucion or generar_id_ejecucion()
 
+    carpeta_logs = carpeta_logs or (raiz_ejecucion() / "logs")
     carpeta_logs.mkdir(parents=True, exist_ok=True)
     formateador = logging.Formatter(FORMATO)
     filtro = _FiltroIdEjecucion()
@@ -78,8 +82,9 @@ def obtener_id_ejecucion() -> str:
     return _id_ejecucion or "sin-id"
 
 
-def carpeta_de_capturas(carpeta_logs: Path = Path("logs")) -> Path:
+def carpeta_de_capturas(carpeta_logs: Path | None = None) -> Path:
     """Carpeta donde se guardan las capturas de pantalla de esta corrida."""
+    carpeta_logs = carpeta_logs or (raiz_ejecucion() / "logs")
     destino = carpeta_logs / "capturas" / obtener_id_ejecucion()
     destino.mkdir(parents=True, exist_ok=True)
     return destino

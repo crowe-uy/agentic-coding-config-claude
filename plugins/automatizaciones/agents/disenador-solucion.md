@@ -34,6 +34,7 @@ El diagrama va en un bloque ` ```mermaid ` dentro del markdown, para que GitHub 
 - Qué pasa con un ítem que no se puede procesar: ¿aborta la corrida o sigue con el siguiente? (Casi siempre: sigue.)
 - Cómo se entera una persona de que algo salió mal.
 - Dónde queda el resultado.
+- **¿El proceso tiene etapas naturales que conviene separar?** Por ejemplo: una parte captura información y la registra; otra, en una corrida distinta (otro horario, capaz otro día), actúa sobre lo registrado. Señal de que sí: las partes corren con frecuencias distintas, o dependen de ventanas de disponibilidad distintas, o conviene poder reintentar una sin repetir la otra. Si es así, modelá cada etapa como su propio `subgraph`, con el registro que las conecta como nodo de datos (`[/registro de correos/]`) — ver "Procesos en varias etapas" en `docs/estandares-python.md` del plugin, que trae el patrón (`registro_items.py`) ya resuelto.
 
 ## El resto del documento
 

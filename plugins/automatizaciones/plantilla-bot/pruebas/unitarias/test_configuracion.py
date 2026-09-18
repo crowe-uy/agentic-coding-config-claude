@@ -23,7 +23,7 @@ def test_prefiere_env_local_sobre_los_demas(
     monkeypatch.chdir(tmp_path)
 
     # Ejecutar y verificar
-    assert configuracion._archivo_entorno() == Path(".env.local")
+    assert configuracion._archivo_entorno() == tmp_path / ".env.local"
 
 
 @pytest.mark.caso("CP-018")
@@ -35,7 +35,7 @@ def test_usa_env_dev_si_no_hay_local(tmp_path: Path, monkeypatch: pytest.MonkeyP
     monkeypatch.chdir(tmp_path)
 
     # Ejecutar y verificar
-    assert configuracion._archivo_entorno() == Path(".env.dev")
+    assert configuracion._archivo_entorno() == tmp_path / ".env.dev"
 
 
 @pytest.mark.caso("CP-019")
@@ -46,7 +46,7 @@ def test_usa_env_como_ultimo_recurso(tmp_path: Path, monkeypatch: pytest.MonkeyP
     monkeypatch.chdir(tmp_path)
 
     # Ejecutar y verificar
-    assert configuracion._archivo_entorno() == Path(".env")
+    assert configuracion._archivo_entorno() == tmp_path / ".env"
 
 
 @pytest.mark.caso("CP-020")

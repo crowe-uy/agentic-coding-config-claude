@@ -142,6 +142,78 @@ Dos preguntas a responder en el diseño y resolver en el código:
 
 Forma habitual: procesar por ítem, registrar el resultado de cada uno (archivo de estado o sistema destino) y consultar ese registro al iniciar.
 
+## Procesos en varias etapas
+
+Algunos procesos conviene partirlos en etapas que corren por separado, en vez de todo en una sola pasada. Caso típico: una etapa toma correos y registra cada uno como pendiente; horas o días después, otra etapa (otra corrida, capaz otro horario) lee los pendientes, da de alta en el sistema destino y deja el resultado en el mismo registro.
+
+Separar en etapas tiene sentido cuando:
+
+- las dos partes tienen que correr con frecuencias distintas (captura cada 15 minutos, alta una vez al día);
+- una parte depende de un sistema con ventana de disponibilidad propia, distinta de la otra;
+- conviene poder reintentar la segunda parte sin repetir la primera (si la alta falla, no hace falta volver a capturar los correos).
+
+Si el proceso es simple y corre de punta a punta en una sola pasada, no lo compliques: esto es para cuando el proceso ya tiene esa forma, no una obligación.
+
+### El registro conecta las etapas
+
+`registro_items.py` (en `src/paquete_bot/`, opcional — si no lo usás, ignoralo) da un registro persistente respaldado en SQLite. Una etapa agrega ítems pendientes; la otra los lee, actúa y deja el resultado:
+
+```python
+from paquete_bot.entorno import raiz_ejecucion
+from paquete_bot.modelos import EstadoItem
+from paquete_bot.registro_items import RegistroItems
+
+registro = RegistroItems(raiz_ejecucion() / "estado" / "correos.db")
+
+# Etapa de captura: un ítem por correo encontrado. Idempotente — si la
+# etapa corre dos veces sobre el mismo período, no duplica.
+registro.agregar(id_correo, datos=json.dumps({"asunto": asunto, "remitente": remitente}))
+
+# Etapa de alta, en otra corrida, capaz otro día:
+for item in registro.pendientes():
+    datos = json.loads(item.datos)
+    try:
+        id_sistema = dar_de_alta(datos)
+        registro.marcar(item.id, EstadoItem.PROCESADO, f"Alta OK, id {id_sistema}")
+    except ErrorNegocio as error:
+        registro.marcar(item.id, EstadoItem.EXCEPCION_NEGOCIO, str(error))
+```
+
+Es SQLite y no CSV/Excel a propósito: si las dos etapas llegaran a solaparse (la de alta arranca mientras la de captura todavía escribe), una escritura a medio terminar no corrompe el archivo.
+
+El archivo del registro se ancla a `raiz_ejecucion()`, igual que `logs/` y `salida/` — así funciona corriendo desde código fuente o empaquetado en `.exe` (ver [empaquetado.md](empaquetado.md)), sin importar desde qué carpeta lo dispare el Programador de tareas.
+
+### Un `.exe`, varias etapas
+
+Si el bot está empaquetado, no hace falta un `.exe` por etapa: `ejecutar.py` puede tomar el nombre de la etapa como argumento y `principal.py` la despacha.
+
+```python
+# ejecutar.py
+if __name__ == "__main__":
+    etapa = sys.argv[1] if len(sys.argv) > 1 else "captura"
+    sys.exit(main(etapa))
+```
+
+```python
+# principal.py
+def ejecutar_captura() -> ResumenEjecucion: ...
+def ejecutar_alta() -> ResumenEjecucion: ...
+
+
+def main(etapa: str) -> int:
+    funciones = {"captura": ejecutar_captura, "alta": ejecutar_alta}
+    if etapa not in funciones:
+        registro.critical("Etapa desconocida: %s (opciones: %s)", etapa, ", ".join(funciones))
+        return 2
+    ...
+```
+
+Cada etapa se programa como una tarea separada en el Programador de tareas de Windows, invocando el mismo `.exe` con un argumento distinto (`bot.exe captura`, `bot.exe alta`).
+
+### En el diseño
+
+El diagrama de `docs/diseno/solucion.md` modela cada etapa como su propio `subgraph`, con el registro como nodo de datos que las conecta (`[/registro de correos/]`). La matriz de casos de uso agrega, además de los casos normales de cada etapa: qué pasa si la etapa de alta corre sin que haya nada pendiente, y qué pasa si un ítem queda pendiente varias corridas seguidas (¿hay una alerta si algo no se levanta?).
+
 ## Estilo
 
 `ruff` formatea y revisa en cada edición, configurado en `pyproject.toml`:

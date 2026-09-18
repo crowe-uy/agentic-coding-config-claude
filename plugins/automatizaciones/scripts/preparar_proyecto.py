@@ -19,7 +19,7 @@ import sys
 import unicodedata
 from pathlib import Path
 
-EXTENSIONES_TEXTO = {".py", ".md", ".toml", ".txt", ".yml", ".yaml", ".cfg", ".example"}
+EXTENSIONES_TEXTO = {".py", ".md", ".toml", ".txt", ".yml", ".yaml", ".cfg", ".example", ".spec"}
 
 # Archivos de configuración sin extensión que también llevan marcadores a reemplazar.
 ARCHIVOS_SIN_EXTENSION = {"CODEOWNERS"}
@@ -209,7 +209,7 @@ def main(argumentos: list[str] | None = None) -> int:
     print("  Próximos pasos:")
     print(r"   1. python -m venv .venv && .venv\Scripts\activate")
     print("   2. pip install -r requirements.txt -r requirements-dev.txt")
-    print("   3. copy .env.example .env  y completar los valores")
+    print("   3. copy .env.example .env.local  y completar los valores")
     print("   4. Dejar el relevamiento en relevamiento/ y ejecutar /relevamiento")
     print("")
     return 0

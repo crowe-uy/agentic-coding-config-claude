@@ -87,6 +87,16 @@ flowchart TD
 - **Si se ejecuta dos veces sobre el mismo período:** qué mecanismo evita duplicar.
 - **Si se cae en el ítem 300 de 500:** desde dónde retoma y cómo sabe qué ya hizo.
 
+## Etapas del proceso
+
+Completar solo si el proceso se separa en etapas que corren por separado (frecuencias distintas, ventanas de disponibilidad distintas, o conviene reintentar una sin repetir la otra). Si el proceso corre de punta a punta en una sola pasada, borrar esta sección.
+
+| Etapa | Qué hace | Frecuencia | Deja pendiente para |
+|---|---|---|---|
+| | | | |
+
+**Registro que las conecta:** `estado/<nombre>.db` (`RegistroItems`, ver `docs/estandares-python.md` del plugin § Procesos en varias etapas).
+
 ## Parametrizaciones
 
 | Parámetro | Archivo | Validación al leerlo | Ejemplo |

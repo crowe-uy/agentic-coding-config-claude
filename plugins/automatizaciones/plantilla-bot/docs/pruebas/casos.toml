@@ -200,3 +200,75 @@ casos_uso = ["CU-001"]
 tipo = "automatizada"
 prueba = "pruebas/unitarias/test_configuracion.py::test_ninguno_presente_no_falla"
 resultado_esperado = "No lanza excepción; las variables se toman del entorno del sistema si existen"
+
+[[caso]]
+id = "CP-021"
+descripcion = "Sin empaquetar, la carpeta base es el directorio de trabajo actual"
+funcionalidad = "Resolución de la carpeta base de ejecución"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_entorno.py::test_usa_el_directorio_de_trabajo_si_no_esta_empaquetado"
+resultado_esperado = "raiz_ejecucion() devuelve el directorio de trabajo (cwd)"
+
+[[caso]]
+id = "CP-022"
+descripcion = "Empaquetado con PyInstaller, la carpeta base es la del .exe, no el cwd"
+funcionalidad = "Resolución de la carpeta base de ejecución"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_entorno.py::test_usa_la_carpeta_del_exe_si_esta_empaquetado"
+resultado_esperado = "raiz_ejecucion() devuelve la carpeta que contiene el .exe, no el cwd"
+
+[[caso]]
+id = "CP-023"
+descripcion = "Un ítem nuevo queda pendiente en el registro"
+funcionalidad = "Registro persistente entre etapas"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_registro_items.py::test_un_item_nuevo_queda_pendiente"
+resultado_esperado = "El ítem aparece en pendientes() con estado pendiente"
+
+[[caso]]
+id = "CP-024"
+descripcion = "Agregar el mismo id dos veces no lo duplica"
+funcionalidad = "Registro persistente entre etapas"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_registro_items.py::test_agregar_el_mismo_id_dos_veces_no_duplica"
+resultado_esperado = "Sigue habiendo un solo ítem, con los datos de la primera vez"
+
+[[caso]]
+id = "CP-025"
+descripcion = "Marcar un ítem lo saca de la lista de pendientes"
+funcionalidad = "Registro persistente entre etapas"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_registro_items.py::test_marcar_saca_el_item_de_pendientes"
+resultado_esperado = "El ítem marcado no aparece más en pendientes() y guarda el comentario"
+
+[[caso]]
+id = "CP-026"
+descripcion = "Consultar un ítem que no existe no rompe"
+funcionalidad = "Registro persistente entre etapas"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_registro_items.py::test_un_item_inexistente_devuelve_none"
+resultado_esperado = "obtener() devuelve None"
+
+[[caso]]
+id = "CP-027"
+descripcion = "El registro persiste entre corridas separadas (dos instancias)"
+funcionalidad = "Registro persistente entre etapas"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_registro_items.py::test_el_registro_persiste_entre_instancias"
+resultado_esperado = "Una segunda instancia contra el mismo archivo ve lo que registró la primera"
+
+[[caso]]
+id = "CP-028"
+descripcion = "todos() incluye ítems pendientes y ya procesados"
+funcionalidad = "Registro persistente entre etapas"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_registro_items.py::test_todos_incluye_pendientes_y_procesados"
+resultado_esperado = "El listado completo refleja el estado real de cada ítem"

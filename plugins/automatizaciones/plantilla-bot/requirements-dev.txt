@@ -1,3 +1,7 @@
 # Dependencias de desarrollo y pruebas.
 pytest==8.3.3
 ruff==0.7.4
+
+# Solo si el bot se empaqueta en .exe (ver docs/empaquetado.md del plugin).
+# Si nunca vas a empaquetar este bot, podés borrar esta línea.
+pyinstaller==6.11.1

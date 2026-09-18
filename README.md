@@ -30,8 +30,9 @@ El ciclo completo, con las aprobaciones y artefactos obligatorios de cada fase, 
 | `/diseno` | 1 | Diseña la solución y la documenta en un diagrama Mermaid con matriz de casos de uso |
 | `/implementar` | 2 | Descompone el diseño aprobado en tareas y escribe código con sus pruebas |
 | `/commit-pr` | 2 | Arma el commit y el PR con el detalle de funcionalidad y pruebas |
-| `/manual-usuario` | 4 | Genera o actualiza el manual para el equipo de mantenimiento |
-| `/release` | 3 | Crea la rama de release, ejecuta las pruebas y genera el informe `index.html` |
+| `/manual-usuario` | 3 | Genera o actualiza el manual para el equipo de mantenimiento |
+| `/release` | 4 | Crea la rama de release, ejecuta las pruebas y genera el informe `index.html` |
+| `/empaquetar` | 4/5 | Opcional: genera un `.exe` standalone con PyInstaller, para equipos sin Python |
 | `/bitacora` | Todas | Registra una entrada en la bitácora del ciclo |
 
 ## Documentación del equipo
@@ -41,6 +42,7 @@ El ciclo completo, con las aprobaciones y artefactos obligatorios de cada fase, 
 - [Convenciones de Git y GitHub](docs/convenciones-git.md)
 - [Estándares de código Python](docs/estandares-python.md)
 - [Seguridad y manejo de información sensible](docs/seguridad.md)
+- [Empaquetado en .exe](docs/empaquetado.md)
 
 ## Estructura
 

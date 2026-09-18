@@ -76,6 +76,8 @@ Acá se revisa el diagrama de la solución: si cambió durante el desarrollo, se
 
 `main` refleja siempre lo que está en producción. Ante un incidente: rama `hotfix/<slug>` desde `main`, con una prueba que reproduce la falla antes de corregirla, PR a `main`, tag y back-merge a `dev`.
 
+**Opcional — empaquetado.** Si el equipo del cliente no permite instalar Python, `/empaquetar` genera un `.exe` standalone con PyInstaller sobre el tag `vX.Y.Z` ya aprobado. Ver [empaquetado.md](empaquetado.md).
+
 ## Qué exige cada aprobación
 
 | | Diseño (Fase 1) | Producción (Fase 4) |

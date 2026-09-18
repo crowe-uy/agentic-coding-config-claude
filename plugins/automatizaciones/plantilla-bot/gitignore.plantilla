@@ -22,8 +22,13 @@ venv/
 # --- Salidas de ejecucion ---
 logs/
 salida/
+estado/
 *.log
 resultados-pytest.xml
+
+# --- Empaquetado con PyInstaller ---
+build/
+dist/
 
 # --- Sistema operativo ---
 Thumbs.db

@@ -133,7 +133,9 @@ Problemas detectados que **no** tienen solución dentro de la automatización. S
 
 ## Cómo ejecutar la automatización
 
-### Manualmente
+**Forma de distribución:** código fuente (requiere Python instalado) / `.exe` empaquetado con PyInstaller — completar según corresponda a este bot. <!-- borrar la que no aplique -->
+
+### Manualmente — código fuente
 
 ```bash
 cd <carpeta del bot>
@@ -141,14 +143,28 @@ cd <carpeta del bot>
 python ejecutar.py
 ```
 
+### Manualmente — `.exe`
+
+```bash
+cd <carpeta con el .exe>
+<paquete>-X.Y.Z.exe
+```
+
+El `.env` (o `.env.local`/`.env.dev`) tiene que estar **en la misma carpeta que el `.exe`**: ahí es donde el bot busca todo (credenciales, `logs/`, `salida/`), sin importar desde dónde se lo invoque. Ver `docs/empaquetado` del plugin.
+
 ### Programada
 
-| | |
-|---|---|
-| **Mecanismo** | Programador de tareas de Windows / orquestador |
-| **Frecuencia** | |
-| **Horario** | |
-| **Usuario que la ejecuta** | |
+**Mecanismo:** Programador de tareas de Windows / orquestador.
+
+Una fila por tarea programada — un bot de una sola etapa tiene una sola fila; un bot con etapas separadas (ver `docs/diseno/solucion.md`) tiene una por etapa, cada una invocando el mismo `.exe` con un argumento distinto.
+
+| Etapa / tarea | Frecuencia | Horario | Usuario que la ejecuta | Argumento |
+|---|---|---|---|---|
+| | | | | |
+
+### Reconstruir el `.exe` (si aplica)
+
+Solo si este bot se distribuye empaquetado. `/empaquetar` en el plugin del equipo hace todo el proceso; en resumen: `pip install -r requirements.txt -r requirements-dev.txt` (incluye PyInstaller), `pyinstaller paquete.spec`, y renombrar el resultado con la versión del release.
 
 ### Cómo detenerla
 
