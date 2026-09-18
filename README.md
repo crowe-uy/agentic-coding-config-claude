@@ -9,7 +9,7 @@ Este repositorio es la **fuente de cómo desarrollamos automatizaciones en Pytho
 
 ```bash
 # Dentro de Claude Code, una sola vez por equipo:
-/plugin marketplace add <organizacion>/agentic-coding-config-claude
+/plugin marketplace add crowe-uy/agentic-coding-config-claude
 /plugin install automatizaciones
 ```
 
