@@ -1,0 +1,118 @@
+"""Pruebas del verificador de las aprobaciones del ciclo."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import verificar_ciclo
+
+DISENO_APROBADO = """
+| **Aprobado por** | Referente Tecnico |
+| **Fecha de aprobación** | 2026-09-17 |
+
+```mermaid
+flowchart TD
+    a([Inicio]) --> b[Paso]
+```
+
+| # | Caso de uso | Resultado esperado |
+|---|---|---|
+| CU-001 | Camino normal | Procesado |
+"""
+
+CATALOGO = """
+[[caso]]
+id = "CP-001"
+descripcion = "Camino normal"
+funcionalidad = "Flujo"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_flujo.py::test_normal"
+resultado_esperado = "Procesa el item"
+"""
+
+
+def _proyecto(tmp_path: Path, diseno: str = DISENO_APROBADO) -> Path:
+    (tmp_path / "docs" / "diseno").mkdir(parents=True)
+    (tmp_path / "docs" / "pruebas").mkdir(parents=True)
+    (tmp_path / "docs" / "bitacora.md").write_text("# Bitácora\n", encoding="utf-8")
+    (tmp_path / "docs" / "diseno" / "solucion.md").write_text(diseno, encoding="utf-8")
+    (tmp_path / "docs" / "pruebas" / "casos.toml").write_text(CATALOGO, encoding="utf-8")
+    return tmp_path
+
+
+def test_la_aprobacion_de_diseno_falla_con_preguntas_abiertas(tmp_path: Path) -> None:
+    """No se diseña sobre preguntas sin responder."""
+    raiz = _proyecto(tmp_path)
+    (raiz / "docs" / "preguntas-abiertas.md").write_text(
+        "| P-001 | ¿Qué pasa si corre dos veces? | Bloquea | Referente | 2026-09-17 | | abierta |",
+        encoding="utf-8",
+    )
+
+    controles = verificar_ciclo.controlar_diseno(raiz)
+
+    preguntas = next(c for c in controles if "preguntas abiertas" in c.nombre)
+    assert not preguntas.ok
+
+
+def test_la_aprobacion_de_diseno_exige_accesos_verificados(tmp_path: Path) -> None:
+    """Un acceso solicitado pero no probado no cierra la fase."""
+    raiz = _proyecto(tmp_path)
+    (raiz / "docs" / "accesos.md").write_text(
+        "| A-001 | Portal | usuario | Sistemas | 2026-09-01 | | solicitado |",
+        encoding="utf-8",
+    )
+
+    accesos = next(c for c in verificar_ciclo.controlar_diseno(raiz) if "accesos" in c.nombre)
+
+    assert not accesos.ok
+
+
+def test_detecta_un_caso_de_uso_sin_prueba(tmp_path: Path) -> None:
+    """El release se bloquea si un caso de uso del diseño no tiene prueba."""
+    raiz = _proyecto(tmp_path, DISENO_APROBADO + "\n| CU-002 | Portal caído | Reintenta |\n")
+
+    cobertura = verificar_ciclo.controlar_cobertura(raiz)
+
+    sin_cubrir = next(c for c in cobertura if "tienen prueba" in c.nombre)
+    assert not sin_cubrir.ok
+    assert "CU-002" in sin_cubrir.detalle
+
+
+def test_acepta_la_cobertura_completa(tmp_path: Path) -> None:
+    """Con todos los casos de uso cubiertos, el control pasa."""
+    raiz = _proyecto(tmp_path)
+
+    cobertura = verificar_ciclo.controlar_cobertura(raiz)
+
+    assert all(c.ok for c in cobertura)
+
+
+def test_exige_las_secciones_del_manual(tmp_path: Path) -> None:
+    """Un manual sin las secciones obligatorias no habilita el release."""
+    raiz = _proyecto(tmp_path)
+    (raiz / "docs" / "manual-usuario.md").write_text(
+        "# Manual\n\n## Precondiciones\n\nTexto.\n", encoding="utf-8"
+    )
+
+    secciones = next(
+        c for c in verificar_ciclo.controlar_documentacion(raiz, "1.0.0") if "secciones" in c.nombre
+    )
+
+    assert not secciones.ok
+    assert "Errores conocidos" in secciones.detalle
+
+
+def test_exige_variables_documentadas(tmp_path: Path) -> None:
+    """Una variable de entorno usada y no documentada bloquea el release."""
+    raiz = _proyecto(tmp_path)
+    (raiz / "src").mkdir()
+    (raiz / "src" / "configuracion.py").write_text(
+        'clave = obtener_variable("PORTAL_CLAVE")\n', encoding="utf-8"
+    )
+    (raiz / ".env.example").write_text("ENTORNO=\n", encoding="utf-8")
+
+    control = verificar_ciclo.controlar_variables(raiz)[0]
+
+    assert not control.ok
+    assert "PORTAL_CLAVE" in control.detalle

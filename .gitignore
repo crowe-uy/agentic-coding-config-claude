@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Entorno y secretos (nunca deben subirse)
+.env
+.env.local
+*.pem
+*.key
+credenciales*
+
+# Sistema operativo
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Salidas temporales
+salida/
+*.log

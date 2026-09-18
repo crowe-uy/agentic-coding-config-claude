@@ -1,0 +1,9 @@
+{
+  "name": "automatizaciones",
+  "description": "Ciclo de implementacion, estandares de codigo y control de calidad para automatizaciones en Python asistidas por IA.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Equipo de Automatizaciones"
+  },
+  "keywords": ["rpa", "automatizacion", "python", "ciclo-de-implementacion", "pytest"]
+}

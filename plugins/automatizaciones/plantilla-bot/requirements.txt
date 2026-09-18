@@ -1,0 +1,17 @@
+# Dependencias de ejecucion del bot.
+# Descomenta solo las que este bot realmente usa y fija la version.
+
+python-dotenv==1.0.1
+
+# --- Web ---
+# playwright==1.48.0
+
+# --- Escritorio Windows / SAP ---
+# pywinauto==0.6.8
+
+# --- Archivos y datos ---
+# openpyxl==3.1.5
+# pandas==2.2.3
+
+# --- APIs y correo ---
+# httpx==0.27.2

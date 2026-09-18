@@ -1,0 +1,31 @@
+# --- Informacion sensible: nunca se sube ---
+relevamiento/*
+!relevamiento/LEEME.md
+.env
+.env.local
+*.pem
+*.pfx
+*.key
+credenciales*
+datos/reales/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# --- Salidas de ejecucion ---
+logs/
+salida/
+*.log
+resultados-pytest.xml
+
+# --- Sistema operativo ---
+Thumbs.db
+desktop.ini
+.DS_Store
+~$*

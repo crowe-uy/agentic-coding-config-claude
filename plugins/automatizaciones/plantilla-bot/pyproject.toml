@@ -1,0 +1,32 @@
+[project]
+name = "paquete-bot"
+version = "0.1.0"
+description = "Automatizacion del equipo de automatizaciones"
+requires-python = ">=3.14"
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+src = ["src", "pruebas"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RET", "ARG", "PTH", "N"]
+ignore = [
+    "E501",   # el formateador ya controla el largo de linea
+    "N818",   # nuestras excepciones usan el prefijo Error (ErrorNegocio), no el sufijo
+]
+
+[tool.ruff.lint.per-file-ignores]
+"pruebas/*" = ["ARG"]  # las fixtures de pytest se reciben como argumentos sin usar
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+testpaths = ["pruebas"]
+pythonpath = ["src"]
+addopts = "-m 'not e2e' --strict-markers"
+markers = [
+    "e2e: prueba de extremo a extremo, requiere entorno real y sistemas disponibles",
+    "caso(id): id del caso del catalogo docs/pruebas/casos.toml que cubre esta prueba",
+]

@@ -1,0 +1,17 @@
+{
+  "name": "automatizaciones-marketplace",
+  "owner": {
+    "name": "Diego Alvez"
+  },
+  "metadata": {
+    "description": "Configuracion agentica del equipo de automatizaciones: ciclo de implementacion, estandares de Python y plantilla de proyecto.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "automatizaciones",
+      "source": "./plugins/automatizaciones",
+      "description": "Ciclo de implementacion completo para bots en Python: relevamiento, diseno en Mermaid, desarrollo, release con evidencia y manual de usuario."
+    }
+  ]
+}

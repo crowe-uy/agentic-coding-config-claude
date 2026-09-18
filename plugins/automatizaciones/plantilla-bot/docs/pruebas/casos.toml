@@ -1,0 +1,166 @@
+# Catálogo de casos de prueba — <NOMBRE_DEL_BOT>
+#
+# Cada caso de uso de docs/diseno/solucion.md debe tener al menos un caso acá:
+# el verificador del release rechaza la puesta en producción si falta alguno.
+#
+# Campos:
+#   id                  CP-XXX, único y estable en el tiempo
+#   descripcion         Qué se prueba, en una oración
+#   funcionalidad       Qué parte del bot cubre
+#   casos_uso           Lista de CU-XXX del diseño que este caso verifica
+#   tipo                "automatizada" (la ejecuta pytest) o "manual" (la ejecuta una persona)
+#   prueba              Solo si es automatizada: ruta::nombre_del_test
+#   pasos               Solo si es manual: pasos a seguir
+#   resultado_esperado  Qué tiene que pasar para que el caso se considere exitoso
+
+[[caso]]
+id = "CP-001"
+descripcion = "Un período con mes fuera de 1-12 es rechazado al construirse"
+funcionalidad = "Validación de datos de entrada"
+casos_uso = ["CU-004"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_modelos.py::test_periodo_rechaza_mes_invalido"
+resultado_esperado = "Lanza ValueError indicando que el mes es inválido"
+
+[[caso]]
+id = "CP-002"
+descripcion = "El período se representa siempre en formato AAAA-MM"
+funcionalidad = "Validación de datos de entrada"
+casos_uso = ["CU-004"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_modelos.py::test_periodo_se_formatea_con_ceros"
+resultado_esperado = "El período 2026/3 se muestra como 2026-03"
+
+[[caso]]
+id = "CP-003"
+descripcion = "El resumen de la corrida totaliza correctamente por estado"
+funcionalidad = "Informe de resultados"
+casos_uso = ["CU-002"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_modelos.py::test_resumen_cuenta_cada_estado"
+resultado_esperado = "Cuenta por separado procesados, excepciones de negocio y errores de sistema"
+
+[[caso]]
+id = "CP-004"
+descripcion = "Un error de sistema transitorio se reintenta hasta lograr la operación"
+funcionalidad = "Política de reintentos"
+casos_uso = ["CU-003"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_reintentos.py::test_reintenta_el_error_de_sistema_hasta_lograrlo"
+resultado_esperado = "La operación se ejecuta 3 veces y termina exitosamente"
+
+[[caso]]
+id = "CP-005"
+descripcion = "Un error de negocio no se reintenta"
+funcionalidad = "Política de reintentos"
+casos_uso = ["CU-002"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_reintentos.py::test_no_reintenta_el_error_de_negocio"
+resultado_esperado = "La operación se ejecuta una sola vez y propaga el ErrorNegocio"
+
+[[caso]]
+id = "CP-006"
+descripcion = "Si el error de sistema persiste, se propaga tras agotar los intentos"
+funcionalidad = "Política de reintentos"
+casos_uso = ["CU-003"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_reintentos.py::test_agota_los_intentos_y_propaga"
+resultado_esperado = "Se ejecuta la cantidad de intentos configurada y lanza ErrorSistema"
+
+[[caso]]
+id = "CP-007"
+descripcion = "La espera por condición termina apenas la condición se cumple"
+funcionalidad = "Esperas"
+casos_uso = ["CU-003"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_reintentos.py::test_esperar_hasta_devuelve_al_cumplirse_la_condicion"
+resultado_esperado = "No espera de más: retorna en cuanto la condición es verdadera"
+
+[[caso]]
+id = "CP-008"
+descripcion = "La espera por condición lanza un error claro al agotarse el tiempo"
+funcionalidad = "Esperas"
+casos_uso = ["CU-003"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_reintentos.py::test_esperar_hasta_agota_el_tiempo"
+resultado_esperado = "Lanza ErrorSistema mencionando qué se estaba esperando"
+
+[[caso]]
+id = "CP-009"
+descripcion = "Un archivo de parametrización válido se lee completo"
+funcionalidad = "Lectura de parametrizaciones"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/integracion/test_conector_archivos.py::test_lee_un_csv_valido"
+resultado_esperado = "Devuelve todas las filas con sus columnas"
+
+[[caso]]
+id = "CP-010"
+descripcion = "Un archivo con una columna renombrada da un error que nombra la columna faltante"
+funcionalidad = "Lectura de parametrizaciones"
+casos_uso = ["CU-004"]
+tipo = "automatizada"
+prueba = "pruebas/integracion/test_conector_archivos.py::test_rechaza_csv_con_columna_faltante"
+resultado_esperado = "Lanza ErrorNegocio indicando la columna que falta, antes de procesar nada"
+
+[[caso]]
+id = "CP-011"
+descripcion = "Un archivo con encabezado pero sin filas se rechaza"
+funcionalidad = "Lectura de parametrizaciones"
+casos_uso = ["CU-004"]
+tipo = "automatizada"
+prueba = "pruebas/integracion/test_conector_archivos.py::test_rechaza_csv_sin_filas"
+resultado_esperado = "Lanza ErrorNegocio indicando que no hay filas para procesar"
+
+[[caso]]
+id = "CP-012"
+descripcion = "Una carpeta de red inaccesible se clasifica como error de sistema"
+funcionalidad = "Acceso a carpetas"
+casos_uso = ["CU-003"]
+tipo = "automatizada"
+prueba = "pruebas/integracion/test_conector_archivos.py::test_carpeta_inaccesible_es_error_de_sistema"
+resultado_esperado = "Lanza ErrorSistema, de modo que la operación sea reintentable"
+
+[[caso]]
+id = "CP-013"
+descripcion = "El conector cierra la sesión aunque el bloque falle"
+funcionalidad = "Gestión de conexiones"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/integracion/test_conector_archivos.py::test_el_conector_cierra_aunque_falle"
+resultado_esperado = "Se llama a desconectar incluso ante una excepción"
+
+[[caso]]
+id = "CP-014"
+descripcion = "Corrida completa de extremo a extremo en el ambiente de prueba"
+funcionalidad = "Flujo completo"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/e2e/test_flujo_completo.py::test_corrida_completa_en_entorno_de_prueba"
+resultado_esperado = "Procesa el período de prueba y deja la salida esperada"
+
+[[caso]]
+id = "CP-015"
+descripcion = "La corrida sin ítems pendientes termina correctamente"
+funcionalidad = "Flujo completo"
+casos_uso = ["CU-005"]
+tipo = "manual"
+pasos = [
+    "Dejar la lista de trabajo vacía en el ambiente de prueba",
+    "Ejecutar: python ejecutar.py",
+    "Revisar el log de la corrida y el código de salida",
+]
+resultado_esperado = "Termina con código 0, informa cero ítems y no genera archivos de salida"
+
+[[caso]]
+id = "CP-016"
+descripcion = "El resultado queda correctamente cargado en el sistema destino"
+funcionalidad = "Salida hacia el sistema destino"
+casos_uso = ["CU-001"]
+tipo = "manual"
+pasos = [
+    "Ejecutar la corrida sobre el período de prueba",
+    "Entrar al sistema destino con un usuario del negocio",
+    "Verificar que el resultado figura completo y con el formato acordado",
+]
+resultado_esperado = "El registro aparece en el sistema destino con los datos correctos"

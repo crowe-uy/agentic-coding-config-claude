@@ -1,0 +1,13 @@
+# Normaliza los finales de linea para que el repo se vea igual en todos los equipos.
+* text=auto
+
+# El control previo al commit lo ejecuta el shell de git: necesita finales LF.
+pre-commit.plantilla text eol=lf
+*.sh text eol=lf
+
+# Binarios: git no debe tocarlos.
+*.png binary
+*.jpg binary
+*.pdf binary
+*.docx binary
+*.xlsx binary

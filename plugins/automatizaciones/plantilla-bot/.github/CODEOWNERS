@@ -1,0 +1,6 @@
+# El referente técnico revisa las dos puertas del ciclo.
+# Reemplazar @referente-tecnico por el usuario o equipo real de GitHub.
+
+/docs/diseno/            @referente-tecnico
+/docs/manual-usuario.md  @referente-tecnico
+/docs/pruebas/           @referente-tecnico

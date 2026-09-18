@@ -1,0 +1,9 @@
+#!/bin/sh
+# Control previo al commit del equipo de automatizaciones.
+# Lo instala /nuevo-bot en .git/hooks/pre-commit.
+#
+# Bloquea el commit si detecta secretos o archivos sensibles en el índice.
+# Para saltearlo en una emergencia: git commit --no-verify (queda registrado
+# en la bitácora como excepción y debe justificarse en el PR).
+
+python "$(git rev-parse --show-toplevel)/.github/escanear_secretos.py" --staged
