@@ -1,6 +1,6 @@
 ---
 name: relevamiento
-description: Lee el documento de relevamiento (Word o PDF) de la carpeta local, lo interpreta y genera el resumen sanitizado, las preguntas abiertas para el referente y el checklist de accesos. Primer paso de la Fase 1.
+description: Lee el documento de relevamiento (Word o PDF) de la carpeta local, lo interpreta y genera el resumen sanitizado y las preguntas abiertas para el referente. Primer paso de la Fase 1.
 ---
 
 # Lectura e interpretación del relevamiento
@@ -30,8 +30,9 @@ Usá el agente `analista-relevamiento` para producir los tres artefactos. Tiene 
 Resultado esperado:
 
 - `docs/relevamiento-resumen.md` — objetivo, alcance, sistemas, entradas y salidas, reglas de negocio `RN-00X`, excepciones `EX-00X`, parametrizaciones, volumen y criterio de éxito. **Sanitizado**: sin nombres de personas, CUIT, montos, credenciales ni rutas internas.
-- `docs/preguntas-abiertas.md` — todo lo que el documento no aclara.
-- `docs/accesos.md` — checklist de sistemas, permisos, carpetas, casillas y equipo de ejecución.
+- `docs/preguntas-abiertas.md` — todo lo que el documento no aclara, incluidos los sistemas a los que el desarrollador todavía no puede entrar.
+
+Los accesos no llevan un documento aparte: el desarrollador los prueba directamente (con `.env.local` o `.env.dev`, nunca versionados) antes de diseñar. Si alguno no funciona, es una pregunta abierta, no un dato a completar más adelante.
 
 ## 4. Repasá con el desarrollador
 
@@ -39,15 +40,15 @@ Presentale:
 
 - qué entendiste que hace la automatización, en tres oraciones;
 - **las preguntas bloqueantes**, separadas de las menores;
-- los accesos que hay que empezar a gestionar ya, porque suelen tardar;
+- qué accesos convendría empezar a gestionar ya, porque suelen tardar;
 - los riesgos que ves en el alcance.
 
 Las preguntas se resuelven con el referente **antes** de diseñar. Una pregunta abierta al momento de diseñar es un rediseño garantizado.
 
 ## 5. Registrá
 
-Agregá la entrada correspondiente en `docs/bitacora.md`: fecha, documento relevado con su hash, qué quedó pendiente de definir y qué accesos se solicitaron.
+Agregá la entrada correspondiente en `docs/bitacora.md`: fecha, documento relevado con su hash y qué quedó pendiente de definir.
 
 ## Al terminar
 
-Si no quedan preguntas abiertas y los accesos están al menos solicitados, el siguiente paso es `/diseno`. Si quedan preguntas, decilo explícitamente: el ciclo no avanza hasta resolverlas.
+Si no quedan preguntas abiertas, el siguiente paso es `/diseno`. Si quedan preguntas, decilo explícitamente: el ciclo no avanza hasta resolverlas.

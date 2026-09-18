@@ -5,7 +5,7 @@ Cinco fases. Lo que no está escrito en el repositorio no ocurrió: cada fase te
 ```mermaid
 flowchart TD
     A([Relevamiento recibido]) --> B["/nuevo-bot<br/>proyecto + git + controles"]
-    B --> C["/relevamiento<br/>resumen sanitizado<br/>preguntas abiertas<br/>checklist de accesos"]
+    B --> C["/relevamiento<br/>resumen sanitizado<br/>preguntas abiertas"]
     C --> D["/diseno<br/>diagrama Mermaid<br/>matriz de casos de uso"]
     D --> E{{"¿Aprueba el<br/>referente técnico?"}}
     E -->|No| D
@@ -38,13 +38,16 @@ flowchart TD
 
 - **`docs/relevamiento-resumen.md`** — versión sanitizada: objetivo, alcance, sistemas, entradas y salidas, reglas de negocio, excepciones, volúmenes y parametrizaciones. Con el hash SHA-256 del documento original para trazabilidad.
 - **`docs/preguntas-abiertas.md`** — lo que el relevamiento no aclara. Se resuelve con el referente antes de diseñar.
-- **`docs/accesos.md`** — checklist de sistemas, permisos y equipos, con estado `pendiente` / `solicitado` / `verificado`.
+
+Antes de diseñar, el desarrollador prueba directamente el acceso a cada sistema (con `.env.local` o `.env.dev`, nunca versionados — ver [seguridad.md](seguridad.md)). No hay un checklist aparte para esto: si el acceso no funciona, no se puede diseñar.
 
 `/diseno` produce **`docs/diseno/solucion.md`**: diagrama Mermaid en pseudocódigo con un subgrafo por sistema, módulos y responsabilidades, manejo de errores, idempotencia y la matriz de casos de uso (`CU-001`, `CU-002`, …), que después se convierte en el catálogo de pruebas.
 
 **Se aprueba antes de seguir.** PR de `feature/diseno-inicial` a `dev`; el referente técnico revisa y aprueba vía CODEOWNERS. No se escribe código productivo antes de esa aprobación. La bitácora registra quién aprobó, cuándo y con qué observaciones.
 
 ## Fase 2 — Desarrollo
+
+El desarrollador copia `.env.example` como `.env.local` (o `.env.dev` si son credenciales compartidas por el equipo) y completa los valores reales — el bot busca en ese orden y usa el primero que encuentra. Ninguno de los dos se versiona.
 
 Una rama por funcionalidad: `feature/<slug>` para algo nuevo, `fix/<slug>` para un ajuste. Ambas nacen de `dev` y vuelven a `dev`.
 
@@ -79,7 +82,6 @@ Acá se revisa el diagrama de la solución: si cambió durante el desarrollo, se
 |---|---|---|
 | Resumen del relevamiento | Obligatorio | — |
 | Preguntas abiertas | Resueltas | — |
-| Checklist de accesos | Todos verificados | — |
 | Diagrama de la solución | Obligatorio | Actualizado o declarado sin cambios |
 | Matriz de casos de uso | Obligatoria | Cubierta al 100% por pruebas |
 | Código con pruebas | — | Obligatorio |

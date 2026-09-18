@@ -33,6 +33,13 @@ gh pr create --base release/X.Y.Z --head dev --title "release: X.Y.Z" --body "<a
 
 A partir de acá, en `release/X.Y.Z` solo entran correcciones de lo que encuentren las pruebas. Funcionalidad nueva va a `dev` y sale en el próximo release.
 
+**Actualizá la versión del paquete a X.Y.Z, en dos archivos.** No es automático — nadie más lo hace, y `verificar_ciclo.py` va a rechazar el release si quedan desactualizados:
+
+- `pyproject.toml`: `version = "X.Y.Z"` bajo `[project]`.
+- `src/<paquete>/__init__.py`: `__version__ = "X.Y.Z"`.
+
+Commiteá ese cambio en `release/X.Y.Z`.
+
 ## 4. Completá el catálogo de casos
 
 Usá el agente `ingeniero-pruebas`. Tiene que verificar que **cada `CU-00X` de la matriz del diseño tenga al menos un caso** en `docs/pruebas/casos.toml`. Si falta alguno, se escribe la prueba o se agrega como caso manual con pasos concretos.
@@ -65,7 +72,7 @@ Volvé a generar el informe con los resultados cargados.
 python "${CLAUDE_PLUGIN_ROOT}/scripts/verificar_ciclo.py" --fase release --version X.Y.Z
 ```
 
-Controla cobertura de casos de uso, casos fallidos o sin ejecutar, secciones del manual, versión del manual, entrada de bitácora, revisión del diagrama, variables documentadas y archivos sensibles versionados.
+Controla cobertura de casos de uso, casos fallidos o sin ejecutar, secciones del manual, versión del manual, entrada de bitácora, revisión del diagrama, versión de `pyproject.toml`/`__init__.py`, variables documentadas y archivos sensibles versionados.
 
 **Si algo falla, no se abre el PR a `main`.** Resolvé y volvé a correr.
 

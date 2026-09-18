@@ -30,6 +30,8 @@ Versionado semántico `X.Y.Z`:
 
 La rama se llama `release/1.2.0`; el tag en `main`, `v1.2.0`. La misma versión identifica al bot, al informe de pruebas y a la entrada del manual de usuario.
 
+**No es automático: lo actualiza el desarrollador al armar el release.** `pyproject.toml` (`[project] version`) y `src/<paquete>/__init__.py` (`__version__`) se editan a mano al mismo número, como parte de `/release`. `verificar_ciclo.py` lo exige: si no coinciden con la versión del release, lo rechaza. Vale la pena tenerlo sincronizado porque `principal.py` loguea `__version__` al arrancar — es lo que permite saber, mirando un log de producción, con qué versión corrió esa ejecución.
+
 ## Mensajes de commit
 
 Formato: `tipo: descripción concisa en presente`.

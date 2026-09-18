@@ -26,7 +26,7 @@ El ciclo completo, con las aprobaciones y artefactos obligatorios de cada fase, 
 | Comando | Fase | Qué hace |
 |---|---|---|
 | `/nuevo-bot` | Alta | Crea el proyecto desde la plantilla, con git, ramas y controles instalados |
-| `/relevamiento` | 1 | Lee el relevamiento (Word/PDF) y produce el resumen sanitizado, las preguntas abiertas y el checklist de accesos |
+| `/relevamiento` | 1 | Lee el relevamiento (Word/PDF) y produce el resumen sanitizado y las preguntas abiertas |
 | `/diseno` | 1 | Diseña la solución y la documenta en un diagrama Mermaid con matriz de casos de uso |
 | `/implementar` | 2 | Descompone el diseño aprobado en tareas y escribe código con sus pruebas |
 | `/commit-pr` | 2 | Arma el commit y el PR con el detalle de funcionalidad y pruebas |

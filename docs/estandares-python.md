@@ -121,7 +121,7 @@ registro.warning("Reintento %s/%s tras timeout del portal", intento, intentos)
 
 Dos cosas distintas:
 
-- **Configuración**: lo que cambia por entorno y es sensible → `.env` (usuarios, claves, URLs, rutas).
+- **Configuración**: lo que cambia por entorno y es sensible → `.env.local`/`.env.dev`/`.env` (usuarios, claves, URLs, rutas; ver [seguridad.md](seguridad.md)).
 - **Parametrización**: lo que cambia por operación y maneja el usuario → Excel o CSV en `datos/`, documentado en el manual.
 
 `configuracion.py` valida todo al arrancar, antes de abrir nada — no a mitad de la corrida.

@@ -25,7 +25,7 @@
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt -r requirements-dev.txt
-copy .env.example .env      # completar con los valores reales
+copy .env.example .env.local   # tus credenciales, solo en tu máquina
 python -m pytest            # verificar que todo pasa
 python ejecutar.py          # ejecutar el bot
 ```

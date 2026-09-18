@@ -10,7 +10,7 @@ El entregable es `docs/diseno/solucion.md`. Se aprueba antes de escribir código
 
 ## Punto de partida
 
-Leé `docs/relevamiento-resumen.md`, `docs/preguntas-abiertas.md` y `docs/accesos.md`. **Si queda alguna pregunta en estado `abierta`, no diseñes**: decile al desarrollador cuáles hay que resolver primero. Diseñar sobre un supuesto sin confirmar es la forma más cara de equivocarse.
+Leé `docs/relevamiento-resumen.md` y `docs/preguntas-abiertas.md`. **Si queda alguna pregunta en estado `abierta`, no diseñes**: decile al desarrollador cuáles hay que resolver primero. Diseñar sobre un supuesto sin confirmar es la forma más cara de equivocarse.
 
 ## El diagrama
 

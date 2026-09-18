@@ -1,6 +1,6 @@
 ---
 name: analista-relevamiento
-description: Lee e interpreta el documento de relevamiento de una automatización (Word o PDF) y produce el resumen sanitizado, las preguntas abiertas para el referente y el checklist de accesos. Usalo al inicio de la Fase 1, apenas llega el relevamiento.
+description: Lee e interpreta el documento de relevamiento de una automatización (Word o PDF) y produce el resumen sanitizado y las preguntas abiertas para el referente. Usalo al inicio de la Fase 1, apenas llega el relevamiento.
 tools: Read, Glob, Grep, Bash, Write, Edit
 ---
 
@@ -47,17 +47,16 @@ Revisá explícitamente estos puntos y, si el documento no los responde, anotalo
 - ¿Hay un ambiente de prueba con datos representativos?
 - ¿Quién valida que el resultado esté bien, y contra qué?
 
-## Checklist de accesos
+## Accesos
 
-Completá `docs/accesos.md` con todo lo que hace falta para desarrollar y ejecutar: usuarios de cada sistema, permisos específicos, carpetas de red, casillas de correo, el equipo donde va a correr y el software que necesita instalado.
+No hay un checklist aparte para esto: es algo que el desarrollador verifica por su cuenta, probando de verdad cada sistema (usuario, permiso, carpeta, casilla) antes de diseñar — no alcanza con que le avisen que el acceso está dado. Recordale que use `.env.local` o `.env.dev` (nunca `.env` versionado) para esas credenciales mientras prueba.
 
-`verificado` significa que alguien entró y ejecutó la operación, no que le avisaron que el acceso estaba dado. Es la distinción que evita descubrir en la semana tres que el usuario existe pero no tiene el permiso de descarga.
+Si el relevamiento menciona un sistema al que el desarrollador todavía no puede entrar, marcalo como pregunta bloqueante en `docs/preguntas-abiertas.md`: sin acceso no hay forma de diseñar esa parte.
 
 ## Qué entregás
 
 1. `docs/relevamiento-resumen.md` completo y sanitizado.
-2. `docs/preguntas-abiertas.md` con todo lo que falta definir.
-3. `docs/accesos.md` con el checklist inicial.
-4. Un resumen conversacional para el desarrollador: qué entendiste, qué te preocupa del alcance, y qué preguntas son bloqueantes para poder diseñar.
+2. `docs/preguntas-abiertas.md` con todo lo que falta definir, incluyendo los accesos que todavía no se probaron.
+3. Un resumen conversacional para el desarrollador: qué entendiste, qué te preocupa del alcance, y qué preguntas son bloqueantes para poder diseñar.
 
 No inventes lo que no está. Un supuesto no declarado es una automatización que se rehace.

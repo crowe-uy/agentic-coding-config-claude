@@ -9,7 +9,7 @@
 | Categoría | Ejemplos | Dónde va |
 |---|---|---|
 | Documento de relevamiento | `.docx`, `.pdf` del cliente | Carpeta local `relevamiento/`, ignorada por git |
-| Credenciales | Usuarios, contraseñas, tokens, API keys, cadenas de conexión | `.env` local; documentadas sin valor en `.env.example` |
+| Credenciales | Usuarios, contraseñas, tokens, API keys, cadenas de conexión | `.env.local` / `.env.dev` / `.env` local; documentadas sin valor en `.env.example` |
 | Certificados y llaves | `.pem`, `.pfx`, `.key` | Fuera del repositorio |
 | Datos reales | Planillas con CUIT, DNI, montos, nombres de clientes | `datos/reales/` (ignorada). Al repo va `datos/ejemplo/` con datos ficticios |
 | Infraestructura interna | IPs, rutas UNC, nombres de servidores, URLs internas con token | Parametrizadas en `.env`, referidas de forma genérica en la documentación |
@@ -17,7 +17,7 @@
 
 ## Manejo de credenciales
 
-`.env` local, cargado con `python-dotenv`, más un `.env.example` versionado que documenta **cada variable sin su valor**:
+Un único `.env.example` versionado documenta **cada variable sin su valor**:
 
 ```
 # Portal de proveedores
@@ -31,6 +31,14 @@ SMTP_USUARIO=
 SMTP_CLAVE=
 ```
 
+Los valores reales van en un archivo local que **nunca se versiona** (el `.gitignore` de la plantilla excluye cualquier `.env.*` salvo `.env.example`). Tres nombres posibles, según el caso — `cargar_configuracion()` busca en este orden y usa el primero que encuentra:
+
+| Archivo | Para qué |
+|---|---|
+| `.env.local` | Tus credenciales, solo en tu máquina. Lo normal durante la Fase 2. |
+| `.env.dev` | Credenciales de desarrollo compartidas por el equipo. |
+| `.env` | El que usa la ejecución real: programada o manual, en el equipo donde corre el bot. |
+
 Toda variable que el código lea con `obtener_variable(...)` debe existir en `.env.example`: el verificador del ciclo lo comprueba y rechaza el release si falta alguna.
 
 En el manual de usuario se documenta **qué credencial necesita el bot y quién la provee**, nunca su valor.
@@ -41,7 +49,7 @@ En el manual de usuario se documenta **qué credencial necesita el bot y quién 
 
 Tres capas, de menos a más estricta:
 
-1. **`.gitignore`** — excluye `relevamiento/`, `.env`, `datos/reales/`, certificados y logs.
+1. **`.gitignore`** — excluye `relevamiento/`, cualquier `.env.*` (menos `.env.example`), `datos/reales/`, certificados y logs.
 2. **Guardia del agente** (`guardia_secretos.py`) — impide que Claude escriba en rutas prohibidas, que agregue al índice archivos sensibles o que introduzca secretos en el contenido de un archivo.
 3. **Control previo al commit** (`pre-commit` de git) — escanea el diff en el índice buscando patrones de secreto y alta entropía. Actúa aunque el desarrollador commitee a mano, sin Claude.
 

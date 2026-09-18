@@ -70,7 +70,7 @@ def _leer(ruta: Path) -> str:
 
 
 def controlar_diseno(raiz: Path) -> list[Control]:
-    """Controles de la aprobación del diseño: relevamiento, accesos y diseño."""
+    """Controles de la aprobación del diseño: relevamiento y diseño."""
     controles: list[Control] = []
 
     resumen = _leer(raiz / "docs" / "relevamiento-resumen.md")
@@ -96,23 +96,6 @@ def controlar_diseno(raiz: Path) -> list[Control]:
             "Sin preguntas abiertas al referente",
             not abiertas,
             f"Quedan {len(abiertas)} pregunta(s) en estado 'abierta'." if abiertas else "",
-        )
-    )
-
-    accesos = _leer(raiz / "docs" / "accesos.md")
-    sin_verificar = [
-        linea
-        for linea in accesos.splitlines()
-        if linea.strip().startswith("| A-")
-        and re.search(r"\|\s*(pendiente|solicitado)\s*\|?\s*$", linea.strip())
-    ]
-    controles.append(
-        Control(
-            "Todos los accesos verificados",
-            bool(accesos) and not sin_verificar,
-            f"Hay {len(sin_verificar)} acceso(s) sin verificar en docs/accesos.md."
-            if sin_verificar
-            else ("Falta docs/accesos.md." if not accesos else ""),
         )
     )
 
@@ -303,6 +286,57 @@ def controlar_documentacion(raiz: Path, version: str) -> list[Control]:
     return controles
 
 
+def controlar_version_paquete(raiz: Path, version: str) -> list[Control]:
+    """Verifica que pyproject.toml y __init__.py queden en la versión del release.
+
+    Es la única sincronización que existe entre la rama/tag release/X.Y.Z y el
+    número que ve el código en tiempo de ejecución (logs, __version__). Nadie
+    más la mantiene: si esto no se actualiza acá, queda desactualizada para
+    siempre.
+    """
+    controles: list[Control] = []
+
+    pyproject = raiz / "pyproject.toml"
+    version_pyproject = ""
+    if pyproject.exists():
+        try:
+            version_pyproject = (
+                tomllib.loads(pyproject.read_text(encoding="utf-8"))
+                .get("project", {})
+                .get("version", "")
+            )
+        except tomllib.TOMLDecodeError:
+            version_pyproject = ""
+    controles.append(
+        Control(
+            "pyproject.toml en la versión del release",
+            version_pyproject == version,
+            ""
+            if version_pyproject == version
+            else f'pyproject.toml tiene version = "{version_pyproject}", '
+            f"el release es {version}. Actualizalo a mano antes del PR a main.",
+        )
+    )
+
+    for init in sorted((raiz / "src").glob("*/__init__.py")):
+        coincidencia = re.search(
+            r'__version__\s*=\s*["\']([^"\']+)["\']',
+            init.read_text(encoding="utf-8", errors="replace"),
+        )
+        if not coincidencia:
+            continue
+        controles.append(
+            Control(
+                f"{init.relative_to(raiz).as_posix()} en la versión del release",
+                coincidencia.group(1) == version,
+                ""
+                if coincidencia.group(1) == version
+                else f'__version__ = "{coincidencia.group(1)}", el release es {version}.',
+            )
+        )
+    return controles
+
+
 def controlar_variables(raiz: Path) -> list[Control]:
     """Verifica que toda variable de entorno usada esté documentada en .env.example."""
     ejemplo = _leer(raiz / ".env.example")
@@ -402,6 +436,7 @@ def main(argumentos: list[str] | None = None) -> int:
         controlar_cobertura(raiz)
         + controlar_resultados(raiz, opciones.version)
         + controlar_documentacion(raiz, opciones.version)
+        + controlar_version_paquete(raiz, opciones.version)
         + controlar_variables(raiz)
         + controlar_archivos_versionados(raiz)
     )

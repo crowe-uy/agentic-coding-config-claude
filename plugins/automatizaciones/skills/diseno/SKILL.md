@@ -16,10 +16,9 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/verificar_ciclo.py" --fase diseno
 Va a marcar como faltante la aprobación (todavía no existe) y eso está bien. Lo que sí tiene que estar en orden:
 
 - `docs/relevamiento-resumen.md` completo;
-- **cero preguntas en estado `abierta`**;
-- accesos `verificado`, no solo `solicitado`.
+- **cero preguntas en estado `abierta`**.
 
-Si quedan preguntas abiertas, frená y decí cuáles. Diseñar sobre supuestos sin confirmar es la forma más cara de equivocarse.
+Si quedan preguntas abiertas, frená y decí cuáles. Diseñar sobre supuestos sin confirmar es la forma más cara de equivocarse. Verificá también, de palabra con el desarrollador, que ya probó el acceso a cada sistema del relevamiento — si no, es una pregunta abierta más.
 
 ## 2. Diseñá
 

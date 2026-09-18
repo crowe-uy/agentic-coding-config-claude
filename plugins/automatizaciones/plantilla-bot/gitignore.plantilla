@@ -2,7 +2,8 @@
 relevamiento/*
 !relevamiento/LEEME.md
 .env
-.env.local
+.env.*
+!.env.example
 *.pem
 *.pfx
 *.key

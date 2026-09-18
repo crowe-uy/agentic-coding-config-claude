@@ -9,7 +9,8 @@ venv/
 
 # Entorno y secretos (nunca deben subirse)
 .env
-.env.local
+.env.*
+!.env.example
 *.pem
 *.key
 credenciales*

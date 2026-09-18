@@ -164,3 +164,39 @@ pasos = [
     "Verificar que el resultado figura completo y con el formato acordado",
 ]
 resultado_esperado = "El registro aparece en el sistema destino con los datos correctos"
+
+[[caso]]
+id = "CP-017"
+descripcion = "Con .env.local, .env.dev y .env presentes, se usa .env.local"
+funcionalidad = "Resolución del archivo de entorno"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_configuracion.py::test_prefiere_env_local_sobre_los_demas"
+resultado_esperado = "cargar_configuracion usa las variables de .env.local"
+
+[[caso]]
+id = "CP-018"
+descripcion = "Sin .env.local, se usa .env.dev antes que .env"
+funcionalidad = "Resolución del archivo de entorno"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_configuracion.py::test_usa_env_dev_si_no_hay_local"
+resultado_esperado = "cargar_configuracion usa las variables de .env.dev"
+
+[[caso]]
+id = "CP-019"
+descripcion = "Sin .env.local ni .env.dev, se usa el .env genérico"
+funcionalidad = "Resolución del archivo de entorno"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_configuracion.py::test_usa_env_como_ultimo_recurso"
+resultado_esperado = "cargar_configuracion usa las variables de .env"
+
+[[caso]]
+id = "CP-020"
+descripcion = "Sin ningún archivo de entorno, la búsqueda no rompe"
+funcionalidad = "Resolución del archivo de entorno"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_configuracion.py::test_ninguno_presente_no_falla"
+resultado_esperado = "No lanza excepción; las variables se toman del entorno del sistema si existen"

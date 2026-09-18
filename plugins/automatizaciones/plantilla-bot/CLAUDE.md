@@ -19,7 +19,7 @@ Todo en español. Identificadores de código **sin tildes ni `ñ`** (`validar_pe
 ```
 src/paquete_bot/     Código: principal, configuracion, registro, errores, reintentos, conectores/
 pruebas/             unitarias/ (lógica pura) · integracion/ (conectores con dobles) · e2e/ (marcadas)
-docs/                bitacora · diseno/solucion · manual-usuario · accesos · pruebas/casos.toml
+docs/                bitacora · diseno/solucion · manual-usuario · pruebas/casos.toml
 datos/ejemplo/       Parametrizaciones de ejemplo, con datos ficticios
 relevamiento/        IGNORADA POR GIT. El documento original vive acá y no se sube nunca
 ```
@@ -30,7 +30,7 @@ relevamiento/        IGNORADA POR GIT. El documento original vive acá y no se s
 - Cada sistema externo va detrás de un **conector** en `conectores/`. `principal.py` nunca llama directo a Playwright, pywinauto ni `requests`.
 - **Nunca `time.sleep()` para esperar algo**: se espera por la condición con `esperar_hasta(...)`.
 - **Nunca `except:` desnudo ni `except Exception: pass`**. Si se ignora una excepción, se comenta por qué.
-- Las credenciales se leen de `.env` con `obtener_variable(...)`; toda variable nueva se agrega a `.env.example`.
+- Las credenciales se leen con `obtener_variable(...)`, desde `.env.local` / `.env.dev` / `.env` (el primero que exista); toda variable nueva se agrega a `.env.example`.
 - Tipado en las firmas públicas, docstrings en español, `pathlib.Path` para rutas.
 - `principal.py` debe leerse como el diagrama de `docs/diseno/solucion.md`. Si no se parecen, uno de los dos está desactualizado.
 

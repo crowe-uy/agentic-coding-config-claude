@@ -46,7 +46,7 @@ Deben existir `main` y `dev`, estar parado en `dev`, y las pruebas de ejemplo de
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt -r requirements-dev.txt
-copy .env.example .env
+copy .env.example .env.local
 ```
 
 Y los tres pasos inmediatos del ciclo:

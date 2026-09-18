@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import sys
 
+from . import __version__
 from .configuracion import Configuracion, cargar_configuracion
 from .errores import ErrorAutomatizacion, ErrorConfiguracion, ErrorNegocio, ErrorSistema
 from .modelos import EstadoItem, Item, Periodo, ResumenEjecucion
@@ -63,7 +64,7 @@ def ejecutar(periodo: Periodo | None = None) -> ResumenEjecucion:
     ese ítem. Solo un error de configuración aborta la corrida entera.
     """
     id_ejecucion = configurar_registro()
-    registro.info("=== Inicio de la corrida %s ===", id_ejecucion)
+    registro.info("=== Inicio de la corrida %s | versión %s ===", id_ejecucion, __version__)
 
     configuracion = cargar_configuracion()
     periodo = periodo or Periodo(anio=2026, mes=1)

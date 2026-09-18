@@ -18,6 +18,22 @@ from dotenv import load_dotenv
 
 from .errores import ErrorConfiguracion
 
+# Orden de prioridad al buscar el archivo de entorno. Ninguno se versiona
+# (solo .env.example): cada desarrollador o entorno tiene el propio.
+#   .env.local  credenciales solo de tu máquina, para trabajar en Fase 2
+#   .env.dev    credenciales de desarrollo compartidas por el equipo
+#   .env        el que usa la ejecución real (programada o manual)
+ARCHIVOS_ENTORNO = (".env.local", ".env.dev", ".env")
+
+
+def _archivo_entorno() -> Path | None:
+    """Devuelve el primer archivo de entorno que exista, según la prioridad."""
+    for nombre in ARCHIVOS_ENTORNO:
+        ruta = Path(nombre)
+        if ruta.exists():
+            return ruta
+    return None
+
 
 def obtener_variable(nombre: str, defecto: str | None = None) -> str:
     """Devuelve una variable de entorno.
@@ -72,12 +88,18 @@ class Configuracion:
 
 
 def cargar_configuracion() -> Configuracion:
-    """Carga el `.env`, valida todo y devuelve la configuración de la corrida.
+    """Carga el archivo de entorno, valida todo y devuelve la configuración de la corrida.
+
+    Busca `.env.local`, después `.env.dev`, después `.env` (el primero que
+    exista) — ver `ARCHIVOS_ENTORNO`. Si no encuentra ninguno, sigue de todos
+    modos: puede que las variables ya estén en el entorno del sistema.
 
     Raises:
         ErrorConfiguracion: ante cualquier variable faltante o ruta inválida.
     """
-    load_dotenv()
+    archivo = _archivo_entorno()
+    if archivo:
+        load_dotenv(archivo)
 
     salida = Path(obtener_variable("CARPETA_SALIDA", "salida"))
     salida.mkdir(parents=True, exist_ok=True)
