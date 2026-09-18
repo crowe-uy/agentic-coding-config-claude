@@ -17,9 +17,9 @@ Genera `dist/<paquete>.exe`. `build/` y `dist/` están en `.gitignore`: son sali
 
 ## Por qué hubo que tocar el código para esto
 
-Un `.exe` lanzado por el Programador de tareas de Windows **no garantiza el directorio de trabajo**. Antes de esto, `logs/`, `salida/` y la búsqueda de `.env*` eran rutas relativas al directorio de trabajo — funcionaba corriendo `python ejecutar.py` desde la carpeta del proyecto, pero un `.exe` programado podía terminar buscando el `.env` o escribiendo logs en cualquier lado, según cómo lo lanzara la tarea.
+Un `.exe` lanzado por el Programador de tareas de Windows **no garantiza el directorio de trabajo**: `logs/`, `salida/` y la búsqueda de `.env*` eran rutas relativas a ese directorio, y un `.exe` programado podía terminar escribiendo o buscando en cualquier lado según cómo lo lanzara la tarea.
 
-`src/paquete_bot/entorno.py` resuelve esto con `raiz_ejecucion()`: empaquetado, la base es la carpeta donde está el `.exe` (`Path(sys.executable).parent`); desde código fuente, el directorio de trabajo actual, como siempre. `configuracion.py` y `registro.py` anclan ahí la búsqueda de `.env*`, `logs/` y `salida/` por defecto.
+`src/paquete_bot/entorno.py` lo resuelve con `raiz_ejecucion()`: empaquetado, la base es la carpeta del `.exe`; desde código fuente, el directorio de trabajo actual, como siempre. `configuracion.py` y `registro.py` anclan ahí `.env*`, `logs/` y `salida/` por defecto.
 
 **Esto significa que el `.exe` y el `.env` (o `.env.local`) tienen que estar en la misma carpeta.** Es la forma más simple de garantizar que el bot encuentre sus credenciales sin importar quién lo lance.
 

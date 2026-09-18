@@ -119,13 +119,10 @@ registro.warning("Reintento %s/%s tras timeout del portal", intento, intentos)
 
 ## Configuración y parametrización
 
-Tres cosas distintas, cada una con su lugar:
-
 - **Configuración**: credenciales y datos sensibles → `.env.local`/`.env.dev`/`.env` (ver [seguridad.md](seguridad.md)).
-- **Parametrización**: lo que el usuario cambia para alterar el comportamiento (qué procesar, con qué valores) → `parametros/ejemplo/` en el repo es solo para pruebas; la real casi siempre vive afuera, en una carpeta de red que edita el cliente (`CARPETA_PARAMETROS` en `.env`).
-- **Entrada a procesar**: los archivos que el cliente deja para que el bot los trabaje esa corrida (el trabajo en sí, no configuración) → también una carpeta local o de red, `CARPETA_ENTRADA`.
-
-Lo que el bot necesita pero el usuario **no** edita (plantillas, listas de referencia) va en `recursos/`, versionado normalmente.
+- **Parametrización**: lo que el usuario cambia para alterar el comportamiento → `parametros/ejemplo/` es solo para pruebas; la real casi siempre vive afuera, en una carpeta de red que edita el cliente (`CARPETA_PARAMETROS`).
+- **Entrada a procesar**: lo que el cliente deja para trabajar esa corrida, no configuración → `CARPETA_ENTRADA`.
+- **Recursos fijos** (plantillas, listas de referencia, lo que el usuario no edita) → `recursos/`, versionado.
 
 `configuracion.py` valida todo al arrancar, antes de abrir nada — no a mitad de la corrida.
 
@@ -147,75 +144,30 @@ Forma habitual: procesar por ítem, registrar el resultado de cada uno (archivo 
 
 ## Procesos en varias etapas
 
-Algunos procesos conviene partirlos en etapas que corren por separado, en vez de todo en una sola pasada. Caso típico: una etapa toma correos y registra cada uno como pendiente; horas o días después, otra etapa (otra corrida, capaz otro horario) lee los pendientes, da de alta en el sistema destino y deja el resultado en el mismo registro.
+Algunos procesos conviene partirlos en etapas que corren por separado. Caso típico: una etapa toma correos y registra cada uno como pendiente; otra, en una corrida distinta, lee los pendientes, da de alta en el sistema destino y deja el resultado en el mismo registro. Tiene sentido cuando las etapas corren con frecuencias distintas, dependen de ventanas de disponibilidad distintas, o conviene reintentar una sin repetir la otra. Si el proceso corre de punta a punta en una pasada, no hace falta esto.
 
-Separar en etapas tiene sentido cuando:
-
-- las dos partes tienen que correr con frecuencias distintas (captura cada 15 minutos, alta una vez al día);
-- una parte depende de un sistema con ventana de disponibilidad propia, distinta de la otra;
-- conviene poder reintentar la segunda parte sin repetir la primera (si la alta falla, no hace falta volver a capturar los correos).
-
-Si el proceso es simple y corre de punta a punta en una sola pasada, no lo compliques: esto es para cuando el proceso ya tiene esa forma, no una obligación.
-
-### El registro conecta las etapas
-
-`registro_items.py` (en `src/paquete_bot/`, opcional — si no lo usás, ignoralo) da un registro persistente respaldado en SQLite. Una etapa agrega ítems pendientes; la otra los lee, actúa y deja el resultado:
+`registro_items.py` (opcional, en `src/paquete_bot/`) conecta las etapas: un registro persistente en SQLite, no CSV/Excel — si las etapas llegan a solaparse, una transacción a medio terminar no lo corrompe.
 
 ```python
-from paquete_bot.entorno import raiz_ejecucion
-from paquete_bot.modelos import EstadoItem
-from paquete_bot.registro_items import RegistroItems
-
 registro = RegistroItems(raiz_ejecucion() / "estado" / "correos.db")
 
-# Etapa de captura: un ítem por correo encontrado. Idempotente — si la
-# etapa corre dos veces sobre el mismo período, no duplica.
-registro.agregar(id_correo, datos=json.dumps({"asunto": asunto, "remitente": remitente}))
+# Etapa de captura. Idempotente: no duplica si corre dos veces.
+registro.agregar(id_correo, datos=json.dumps({"asunto": asunto}))
 
-# Etapa de alta, en otra corrida, capaz otro día:
+# Etapa de alta, en otra corrida:
 for item in registro.pendientes():
-    datos = json.loads(item.datos)
     try:
-        id_sistema = dar_de_alta(datos)
+        id_sistema = dar_de_alta(json.loads(item.datos))
         registro.marcar(item.id, EstadoItem.PROCESADO, f"Alta OK, id {id_sistema}")
     except ErrorNegocio as error:
         registro.marcar(item.id, EstadoItem.EXCEPCION_NEGOCIO, str(error))
 ```
 
-Es SQLite y no CSV/Excel a propósito: si las dos etapas llegaran a solaparse (la de alta arranca mientras la de captura todavía escribe), una escritura a medio terminar no corrompe el archivo.
+El archivo se ancla a `raiz_ejecucion()`, igual que `logs/` y `salida/`: funciona corriendo desde código fuente o empaquetado (ver [empaquetado.md](empaquetado.md)).
 
-El archivo del registro se ancla a `raiz_ejecucion()`, igual que `logs/` y `salida/` — así funciona corriendo desde código fuente o empaquetado en `.exe` (ver [empaquetado.md](empaquetado.md)), sin importar desde qué carpeta lo dispare el Programador de tareas.
+**Un `.exe`, varias etapas.** No hace falta un `.exe` por etapa: `ejecutar.py` toma el nombre como argumento (`sys.argv[1]`) y `principal.py` lo despacha a `ejecutar_captura()` / `ejecutar_alta()`. Cada etapa se programa como tarea separada en Windows, invocando el mismo `.exe` con un argumento distinto (`bot.exe captura`, `bot.exe alta`).
 
-### Un `.exe`, varias etapas
-
-Si el bot está empaquetado, no hace falta un `.exe` por etapa: `ejecutar.py` puede tomar el nombre de la etapa como argumento y `principal.py` la despacha.
-
-```python
-# ejecutar.py
-if __name__ == "__main__":
-    etapa = sys.argv[1] if len(sys.argv) > 1 else "captura"
-    sys.exit(main(etapa))
-```
-
-```python
-# principal.py
-def ejecutar_captura() -> ResumenEjecucion: ...
-def ejecutar_alta() -> ResumenEjecucion: ...
-
-
-def main(etapa: str) -> int:
-    funciones = {"captura": ejecutar_captura, "alta": ejecutar_alta}
-    if etapa not in funciones:
-        registro.critical("Etapa desconocida: %s (opciones: %s)", etapa, ", ".join(funciones))
-        return 2
-    ...
-```
-
-Cada etapa se programa como una tarea separada en el Programador de tareas de Windows, invocando el mismo `.exe` con un argumento distinto (`bot.exe captura`, `bot.exe alta`).
-
-### En el diseño
-
-El diagrama de `docs/diseno/solucion.md` modela cada etapa como su propio `subgraph`, con el registro como nodo de datos que las conecta (`[/registro de correos/]`). La matriz de casos de uso agrega, además de los casos normales de cada etapa: qué pasa si la etapa de alta corre sin que haya nada pendiente, y qué pasa si un ítem queda pendiente varias corridas seguidas (¿hay una alerta si algo no se levanta?).
+**En el diseño.** Cada etapa es su propio `subgraph`, con el registro como nodo de datos que las conecta. La matriz de casos de uso agrega: qué pasa si una etapa corre sin nada pendiente, y si un ítem queda pendiente varias corridas seguidas.
 
 ## Estilo
 
