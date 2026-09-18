@@ -1,5 +1,6 @@
-# El referente técnico revisa las dos puertas del ciclo.
-# Reemplazar @referente-tecnico por el usuario o equipo real de GitHub.
+# El referente técnico revisa la aprobación del diseño y la validación del release.
+# /nuevo-bot completa este archivo solo si le pasás --referente; si no, reemplazá
+# el usuario de abajo a mano antes de activar la protección de ramas.
 
 /docs/diseno/            @referente-tecnico
 /docs/manual-usuario.md  @referente-tecnico

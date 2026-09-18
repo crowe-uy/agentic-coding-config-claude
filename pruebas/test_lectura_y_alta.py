@@ -57,3 +57,36 @@ def test_deriva_el_nombre_del_paquete_sin_tildes() -> None:
     )
     assert preparar_proyecto.a_identificador("Conciliación Ñandú") == "conciliacion_nandu"
     assert preparar_proyecto.a_identificador("Bot 2026 - v2", "-") == "bot-2026-v2"
+
+
+def test_normaliza_el_referente_con_arroba() -> None:
+    """Acepta el usuario con o sin @ y lo deja siempre con @."""
+    assert preparar_proyecto._normalizar_referente("jperez") == "@jperez"
+    assert preparar_proyecto._normalizar_referente("@jperez") == "@jperez"
+    assert preparar_proyecto._normalizar_referente("miorg/qa") == "@miorg/qa"
+
+
+def test_personalizar_reemplaza_codeowners_sin_extension(tmp_path: Path) -> None:
+    """CODEOWNERS no tiene extensión: el reemplazo de marcadores igual lo alcanza."""
+    github = tmp_path / ".github"
+    github.mkdir()
+    (github / "CODEOWNERS").write_text("/docs/diseno/  @referente-tecnico\n", encoding="utf-8")
+    (tmp_path / "src").mkdir()
+
+    preparar_proyecto.personalizar(tmp_path, "Mi Bot", "mi_bot", referente="jperez")
+
+    contenido = (github / "CODEOWNERS").read_text(encoding="utf-8")
+    assert "@jperez" in contenido
+    assert "@referente-tecnico" not in contenido
+
+
+def test_personalizar_deja_el_marcador_si_no_hay_referente(tmp_path: Path) -> None:
+    """Sin --referente, el placeholder queda para completarlo a mano."""
+    github = tmp_path / ".github"
+    github.mkdir()
+    (github / "CODEOWNERS").write_text("/docs/diseno/  @referente-tecnico\n", encoding="utf-8")
+    (tmp_path / "src").mkdir()
+
+    preparar_proyecto.personalizar(tmp_path, "Mi Bot", "mi_bot")
+
+    assert "@referente-tecnico" in (github / "CODEOWNERS").read_text(encoding="utf-8")

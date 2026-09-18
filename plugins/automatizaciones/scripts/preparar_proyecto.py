@@ -21,6 +21,9 @@ from pathlib import Path
 
 EXTENSIONES_TEXTO = {".py", ".md", ".toml", ".txt", ".yml", ".yaml", ".cfg", ".example"}
 
+# Archivos de configuración sin extensión que también llevan marcadores a reemplazar.
+ARCHIVOS_SIN_EXTENSION = {"CODEOWNERS"}
+
 # Restos de ejecuciones locales que nunca deben viajar a un proyecto nuevo.
 IGNORAR = shutil.ignore_patterns(
     "__pycache__",
@@ -65,18 +68,35 @@ def copiar_plantilla(plantilla: Path, destino: Path) -> None:
     shutil.copytree(plantilla, destino, dirs_exist_ok=True, ignore=IGNORAR)
 
 
-def personalizar(destino: Path, nombre: str, paquete: str) -> None:
-    """Renombra el paquete y reemplaza los marcadores de la plantilla."""
+def _normalizar_referente(referente: str) -> str:
+    """Acepta 'usuario', '@usuario' u 'org/equipo' y devuelve la forma que espera CODEOWNERS."""
+    referente = referente.strip()
+    if not referente.startswith("@"):
+        referente = f"@{referente}"
+    return referente
+
+
+def personalizar(destino: Path, nombre: str, paquete: str, referente: str = "") -> None:
+    """Renombra el paquete y reemplaza los marcadores de la plantilla.
+
+    Si se indica `referente` (usuario u organización/equipo de GitHub), reemplaza
+    también el placeholder @referente-tecnico de CODEOWNERS. Si no se indica, el
+    placeholder queda para completarlo a mano antes de activar la protección de ramas.
+    """
     origen = destino / "src" / "paquete_bot"
     if paquete != "paquete_bot" and origen.exists():
         origen.rename(destino / "src" / paquete)
 
     for archivo in destino.rglob("*"):
-        if not archivo.is_file() or archivo.suffix.lower() not in EXTENSIONES_TEXTO:
+        si_es_texto = archivo.suffix.lower() in EXTENSIONES_TEXTO
+        si_es_conocido = archivo.name in ARCHIVOS_SIN_EXTENSION
+        if not archivo.is_file() or not (si_es_texto or si_es_conocido):
             continue
         texto = archivo.read_text(encoding="utf-8", errors="replace")
         nuevo = texto.replace("<NOMBRE_DEL_BOT>", nombre).replace("paquete_bot", paquete)
         nuevo = nuevo.replace("paquete-bot", paquete.replace("_", "-"))
+        if referente:
+            nuevo = nuevo.replace("@referente-tecnico", _normalizar_referente(referente))
         if nuevo != texto:
             archivo.write_text(nuevo, encoding="utf-8")
 
@@ -151,6 +171,11 @@ def main(argumentos: list[str] | None = None) -> int:
     analizador.add_argument("--nombre", required=True, help="nombre legible del bot")
     analizador.add_argument("--paquete", help="nombre del paquete de Python (se deriva del nombre)")
     analizador.add_argument(
+        "--referente",
+        default="",
+        help="usuario o equipo de GitHub del referente técnico, para CODEOWNERS (ej. jperez o miorg/qa)",
+    )
+    analizador.add_argument(
         "--plantilla",
         help="ruta de la plantilla (por defecto, la del plugin)",
     )
@@ -162,7 +187,7 @@ def main(argumentos: list[str] | None = None) -> int:
     paquete = opciones.paquete or a_identificador(opciones.nombre)
 
     copiar_plantilla(plantilla, destino)
-    personalizar(destino, opciones.nombre, paquete)
+    personalizar(destino, opciones.nombre, paquete, opciones.referente)
     mensajes = iniciar_repositorio(destino)
     archivos = instalar_controles(destino, aqui)
     mensajes += commit_inicial(destino)
@@ -174,6 +199,12 @@ def main(argumentos: list[str] | None = None) -> int:
         print(f"   - {mensaje}")
     for archivo in archivos:
         print(f"   - Control instalado: {archivo}")
+    print("")
+    if opciones.referente:
+        print(f"   - CODEOWNERS asignado a {_normalizar_referente(opciones.referente)}")
+    else:
+        print("   - Aviso: CODEOWNERS quedó con @referente-tecnico sin reemplazar.")
+        print("     Completalo a mano antes de activar la protección de ramas en GitHub.")
     print("")
     print("  Próximos pasos:")
     print(r"   1. python -m venv .venv && .venv\Scripts\activate")

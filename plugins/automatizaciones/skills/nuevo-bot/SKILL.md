@@ -13,14 +13,17 @@ Preguntá al desarrollador, si no lo dijo al invocar el comando:
 
 - **Nombre del bot**, legible: "Facturación de proveedores".
 - **Dónde crearlo**: carpeta destino. Si no la dice, proponé una carpeta hermana de la actual con el nombre en minúsculas y guiones.
+- **Referente técnico**: su usuario de GitHub (o `org/equipo`). Es quien va a aprobar el diseño y validar cada release; va directo a `CODEOWNERS`. Si todavía no lo sabe, seguí sin este dato — pero avisale que hay que completarlo antes de activar la protección de ramas.
 
 Derivá el nombre del paquete de Python: minúsculas, sin tildes ni `ñ`, con guiones bajos, corto. De "Facturación de proveedores" → `facturacion_proveedores` (sacá las preposiciones).
 
 ## 2. Creá el proyecto
 
 ```bash
-python "${CLAUDE_PLUGIN_ROOT}/scripts/preparar_proyecto.py" --destino "<ruta>" --nombre "<nombre legible>" --paquete <paquete>
+python "${CLAUDE_PLUGIN_ROOT}/scripts/preparar_proyecto.py" --destino "<ruta>" --nombre "<nombre legible>" --paquete <paquete> --referente <usuario-o-org/equipo>
 ```
+
+Omití `--referente` si todavía no lo tenés; el script va a avisar que `CODEOWNERS` quedó pendiente.
 
 El script copia la plantilla, la personaliza, inicializa git en `main`, hace el commit inicial, crea `dev` y deja instalados el escáner de secretos y el control previo al commit.
 
