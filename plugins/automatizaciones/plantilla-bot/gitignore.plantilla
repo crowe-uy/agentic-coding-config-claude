@@ -8,7 +8,7 @@ relevamiento/*
 *.pfx
 *.key
 credenciales*
-datos/reales/
+parametros/reales/
 
 # --- Python ---
 __pycache__/

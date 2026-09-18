@@ -37,6 +37,8 @@ Todo lo que debe cumplirse **antes** de ejecutar. Si algo de esta lista falla, e
 
 ### De los datos de entrada
 
+Los archivos que el cliente deja para que el bot procese esa corrida (`CARPETA_ENTRADA` en `.env` — típicamente una carpeta de red que el cliente escribe directamente).
+
 | Entrada | Ubicación | Formato exigido | Quién la deja |
 |---|---|---|---|
 | | | | |
@@ -86,9 +88,9 @@ Lo que el equipo de mantenimiento **puede cambiar sin tocar el código**.
 
 ### Archivos parametrizables
 
-| Archivo | Ubicación | Quién lo mantiene | Cuándo se modifica |
+| Archivo | Ubicación real | Quién lo mantiene | Cuándo se modifica |
 |---|---|---|---|
-| `parametros.csv` | `datos/` | | |
+| `parametros.csv` | `parametros/` local, o `\\servidor\compartida\...` (ver `CARPETA_PARAMETROS` en `.env`) | | |
 
 #### `parametros.csv`
 

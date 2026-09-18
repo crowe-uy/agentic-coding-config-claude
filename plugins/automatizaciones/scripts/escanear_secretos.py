@@ -34,7 +34,7 @@ RUTAS_PROHIBIDAS: list[tuple[str, str]] = [
     (r"^(\./)?relevamiento/(?!LEEME\.md$)", "documento de relevamiento"),
     (r"\.(pem|pfx|p12|key|jks|keystore)$", "certificado o llave privada"),
     (r"(^|/)credenciales", "archivo de credenciales"),
-    (r"(^|/)datos/reales/", "datos reales de producción"),
+    (r"(^|/)parametros/reales/", "parametrización real de producción"),
     (r"\.(docx?|pdf)$", "documento ofimático: ¿es el relevamiento?"),
 ]
 

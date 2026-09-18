@@ -1,8 +1,22 @@
 """Conector a sistemas web (Playwright).
 
-Requiere `playwright` en requirements.txt y `playwright install chromium`.
-La importación es diferida para que las pruebas unitarias no necesiten el
-navegador instalado.
+Requiere `playwright` en requirements.txt. La importación es diferida para
+que las pruebas unitarias no necesiten el navegador instalado.
+
+Qué navegador usa (parámetro `canal`):
+
+- `None` (por defecto): el Chromium propio de Playwright. Requiere
+  `playwright install chromium` en el equipo donde corre el bot — unos 150MB,
+  independiente de si ese equipo tiene Chrome, Edge o nada.
+- `"msedge"`: usa el Edge que **ya viene instalado en Windows 10/11 por
+  defecto**. Es la opción recomendada si el bot va a estar empaquetado en un
+  .exe para un cliente que no permite instalar nada (ver docs/empaquetado.md
+  del plugin): no hace falta descargar ni instalar un navegador aparte.
+- `"chrome"`: usa Chrome, si está instalado en ese equipo.
+
+Firefox no tiene equivalente: `playwright.firefox.launch()` necesita el build
+propio de Playwright (`playwright install firefox`), no el Firefox público
+que el cliente ya tenga instalado — no hay forma de apuntarlo a ese.
 """
 
 from __future__ import annotations
@@ -18,6 +32,14 @@ from .base import Conector
 registro = obtener_registro(__name__)
 
 
+def _opciones_lanzamiento(visible: bool, canal: str | None) -> dict[str, Any]:
+    """Arma los argumentos de `chromium.launch()` según canal y visibilidad."""
+    opciones: dict[str, Any] = {"headless": not visible}
+    if canal:
+        opciones["channel"] = canal
+    return opciones
+
+
 class ConectorWeb(Conector):
     """Sesión de navegador sobre un portal web.
 
@@ -27,28 +49,49 @@ class ConectorWeb(Conector):
 
     nombre = "web"
 
-    def __init__(self, url: str, usuario: str, clave: str, visible: bool = False) -> None:
+    def __init__(
+        self,
+        url: str,
+        usuario: str,
+        clave: str,
+        visible: bool = False,
+        canal: str | None = None,
+    ) -> None:
         self.url = url
         self.usuario = usuario
         self.clave = clave
         self.visible = visible
+        self.canal = canal
         self._navegador: Any = None
         self._pagina: Any = None
         self._playwright: Any = None
 
     def conectar(self) -> None:
-        """Abre el navegador y carga el portal."""
+        """Abre el navegador y carga el portal.
+
+        Raises:
+            ErrorSistema: si Playwright no está instalado, o si el canal
+                pedido (ej. "msedge") no está disponible en este equipo.
+        """
         try:
             from playwright.sync_api import sync_playwright
         except ImportError as error:  # pragma: no cover
             raise ErrorSistema(
-                "Playwright no está instalado. Agregalo a requirements.txt y "
-                "ejecutá: playwright install chromium"
+                "Playwright no está instalado. Agregalo a requirements.txt."
             ) from error
 
-        registro.info("Abriendo el portal %s", self.url)
+        registro.info("Abriendo el portal %s (canal=%s)", self.url, self.canal or "chromium")
         self._playwright = sync_playwright().start()
-        self._navegador = self._playwright.chromium.launch(headless=not self.visible)
+        try:
+            self._navegador = self._playwright.chromium.launch(
+                **_opciones_lanzamiento(self.visible, self.canal)
+            )
+        except Exception as error:
+            self._playwright.stop()
+            self._playwright = None
+            raise ErrorSistema(
+                f"No se pudo abrir el navegador (canal={self.canal or 'chromium'}): {error}"
+            ) from error
         self._pagina = self._navegador.new_page()
         self._pagina.goto(self.url, timeout=60_000)
 

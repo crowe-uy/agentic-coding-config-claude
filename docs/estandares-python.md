@@ -119,10 +119,13 @@ registro.warning("Reintento %s/%s tras timeout del portal", intento, intentos)
 
 ## Configuración y parametrización
 
-Dos cosas distintas:
+Tres cosas distintas, cada una con su lugar:
 
-- **Configuración**: lo que cambia por entorno y es sensible → `.env.local`/`.env.dev`/`.env` (usuarios, claves, URLs, rutas; ver [seguridad.md](seguridad.md)).
-- **Parametrización**: lo que cambia por operación y maneja el usuario → Excel o CSV en `datos/`, documentado en el manual.
+- **Configuración**: credenciales y datos sensibles → `.env.local`/`.env.dev`/`.env` (ver [seguridad.md](seguridad.md)).
+- **Parametrización**: lo que el usuario cambia para alterar el comportamiento (qué procesar, con qué valores) → `parametros/ejemplo/` en el repo es solo para pruebas; la real casi siempre vive afuera, en una carpeta de red que edita el cliente (`CARPETA_PARAMETROS` en `.env`).
+- **Entrada a procesar**: los archivos que el cliente deja para que el bot los trabaje esa corrida (el trabajo en sí, no configuración) → también una carpeta local o de red, `CARPETA_ENTRADA`.
+
+Lo que el bot necesita pero el usuario **no** edita (plantillas, listas de referencia) va en `recursos/`, versionado normalmente.
 
 `configuracion.py` valida todo al arrancar, antes de abrir nada — no a mitad de la corrida.
 

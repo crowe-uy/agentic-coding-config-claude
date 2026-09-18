@@ -71,7 +71,7 @@ Dos formas razonables — elegí según cómo distribuya el equipo:
 gh release create vX.Y.Z dist/<paquete>-X.Y.Z.exe --title "vX.Y.Z" --notes "Ver docs/pruebas/releases/X.Y.Z/index.html"
 ```
 
-o copiarlo directo al equipo del cliente junto con `.env`, `datos/` y lo que necesite.
+o copiarlo directo al equipo del cliente junto con `.env`, `recursos/` y, si la parametrización real es local y no una carpeta de red, esos archivos también.
 
 ## 7. Documentá en el manual de usuario
 

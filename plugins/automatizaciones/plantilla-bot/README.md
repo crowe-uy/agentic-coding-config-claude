@@ -36,7 +36,8 @@ python ejecutar.py          # ejecutar el bot
 src/paquete_bot/     Código de la automatización
 pruebas/             unitarias · integracion · e2e
 docs/                Documentación del ciclo
-datos/ejemplo/       Parametrizaciones de ejemplo (datos ficticios)
+parametros/ejemplo/  Parametrizaciones de ejemplo (datos ficticios; la real suele vivir afuera, ver .env.example)
+recursos/            Plantillas y archivos de referencia que el bot usa pero el usuario no edita
 relevamiento/        Documento original — IGNORADO POR GIT
 ```
 

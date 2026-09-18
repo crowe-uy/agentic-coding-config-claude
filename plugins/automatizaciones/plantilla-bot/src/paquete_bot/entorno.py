@@ -6,8 +6,8 @@ de trabajo actual — de donde se invocó el comando.
 Empaquetado con PyInstaller (ver docs/empaquetado.md del plugin), el .exe
 puede arrancar con cualquier directorio de trabajo: el Programador de tareas
 de Windows no garantiza cuál. Ahí la base pasa a ser la carpeta donde está
-el .exe, para que `.env*`, `logs/`, `salida/` y `datos/` se resuelvan siempre
-igual sin importar quién ni cómo lo lanzó.
+el .exe, para que `.env*`, `logs/`, `salida/`, `estado/`, `parametros/` y
+`recursos/` se resuelvan siempre igual sin importar quién ni cómo lo lanzó.
 
 Todo lo que el bot lee o escribe con una ruta relativa debe anclarse acá.
 """

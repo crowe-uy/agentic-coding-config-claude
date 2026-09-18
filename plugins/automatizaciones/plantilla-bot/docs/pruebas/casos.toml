@@ -272,3 +272,30 @@ casos_uso = ["CU-001"]
 tipo = "automatizada"
 prueba = "pruebas/unitarias/test_registro_items.py::test_todos_incluye_pendientes_y_procesados"
 resultado_esperado = "El listado completo refleja el estado real de cada ítem"
+
+[[caso]]
+id = "CP-029"
+descripcion = "Sin canal indicado, no se pide ninguno: usa el Chromium propio de Playwright"
+funcionalidad = "Selección de navegador (ConectorWeb)"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_conector_web.py::test_sin_canal_usa_el_chromium_propio_de_playwright"
+resultado_esperado = "Las opciones de lanzamiento no incluyen 'channel'"
+
+[[caso]]
+id = "CP-030"
+descripcion = "Con canal msedge, usa el Edge instalado en el sistema"
+funcionalidad = "Selección de navegador (ConectorWeb)"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_conector_web.py::test_canal_msedge_usa_el_edge_del_sistema"
+resultado_esperado = "Las opciones de lanzamiento incluyen channel='msedge'"
+
+[[caso]]
+id = "CP-031"
+descripcion = "visible=True desactiva headless, para depurar con ventana"
+funcionalidad = "Selección de navegador (ConectorWeb)"
+casos_uso = ["CU-001"]
+tipo = "automatizada"
+prueba = "pruebas/unitarias/test_conector_web.py::test_visible_desactiva_headless"
+resultado_esperado = "headless queda en False"

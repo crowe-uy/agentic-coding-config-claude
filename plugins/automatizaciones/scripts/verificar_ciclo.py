@@ -43,7 +43,7 @@ RUTAS_PROHIBIDAS = [
     (r"(^|/)\.env$", "archivo .env"),
     (r"(^|/)relevamiento/(?!LEEME\.md$)", "documento de relevamiento"),
     (r"\.(pem|pfx|p12|key)$", "certificado o llave privada"),
-    (r"(^|/)datos/reales/", "datos reales"),
+    (r"(^|/)parametros/reales/", "parametrización real"),
 ]
 
 

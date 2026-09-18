@@ -11,7 +11,7 @@
 | Documento de relevamiento | `.docx`, `.pdf` del cliente | Carpeta local `relevamiento/`, ignorada por git |
 | Credenciales | Usuarios, contraseñas, tokens, API keys, cadenas de conexión | `.env.local` / `.env.dev` / `.env` local; documentadas sin valor en `.env.example` |
 | Certificados y llaves | `.pem`, `.pfx`, `.key` | Fuera del repositorio |
-| Datos reales | Planillas con CUIT, DNI, montos, nombres de clientes | `datos/reales/` (ignorada). Al repo va `datos/ejemplo/` con datos ficticios |
+| Parametrización real | Planillas con CUIT, DNI, montos, nombres de clientes | `parametros/reales/` (ignorada) o carpeta de red externa. Al repo va `parametros/ejemplo/` con datos ficticios |
 | Infraestructura interna | IPs, rutas UNC, nombres de servidores, URLs internas con token | Parametrizadas en `.env`, referidas de forma genérica en la documentación |
 | Evidencia de pruebas | Capturas con datos de producción | Se anonimiza antes de commitear |
 
@@ -49,7 +49,7 @@ En el manual de usuario se documenta **qué credencial necesita el bot y quién 
 
 Tres capas, de menos a más estricta:
 
-1. **`.gitignore`** — excluye `relevamiento/`, cualquier `.env.*` (menos `.env.example`), `datos/reales/`, certificados y logs.
+1. **`.gitignore`** — excluye `relevamiento/`, cualquier `.env.*` (menos `.env.example`), `parametros/reales/`, certificados y logs.
 2. **Guardia del agente** (`guardia_secretos.py`) — impide que Claude escriba en rutas prohibidas, que agregue al índice archivos sensibles o que introduzca secretos en el contenido de un archivo.
 3. **Control previo al commit** (`pre-commit` de git) — escanea el diff en el índice buscando patrones de secreto y alta entropía. Actúa aunque el desarrollador commitee a mano, sin Claude.
 

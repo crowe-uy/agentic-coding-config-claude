@@ -99,9 +99,9 @@ Completar solo si el proceso se separa en etapas que corren por separado (frecue
 
 ## Parametrizaciones
 
-| Parámetro | Archivo | Validación al leerlo | Ejemplo |
+| Parámetro | Dónde vive (local `parametros/` o `CARPETA_PARAMETROS` externa) | Validación al leerlo | Ejemplo |
 |---|---|---|---|
-| | `datos/ejemplo/parametros.csv` | | |
+| | `parametros/ejemplo/parametros.csv` | | |
 
 ## Matriz de casos de uso
 

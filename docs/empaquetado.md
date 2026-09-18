@@ -34,10 +34,13 @@ Si eso da problemas, **onedir** (una carpeta con el `.exe` y sus dependencias su
 
 ## Limitación importante: Playwright
 
-Si el bot usa `ConectorWeb` (Playwright), el `.exe` **no incluye los binarios del navegador** — son un descargable aparte (`playwright install chromium`), no parte del paquete de Python, y PyInstaller no los empaqueta solo. El equipo destino necesita:
+Si el bot usa `ConectorWeb` (Playwright), el `.exe` **no incluye los binarios del navegador** — son un descargable aparte, no parte del paquete de Python, y PyInstaller no los empaqueta solo. Tres opciones, de mejor a peor para un cliente sin Python:
 
-- Chromium instalado vía `playwright install chromium` (requiere tener Python ahí, aunque sea momentáneamente, para ese único paso), o
-- Apuntar el conector a un navegador ya instalado en el equipo (`channel="chrome"` en vez de lanzar el Chromium de Playwright).
+- **`canal="msedge"` (recomendado).** `ConectorWeb` acepta un parámetro `canal`; con `"msedge"` usa el Edge que **ya viene instalado en Windows 10/11 por defecto**. Cero instalación extra en el equipo del cliente — es la opción que mejor encaja con "no se puede instalar nada".
+- **`canal="chrome"`.** Igual de simple, pero solo funciona si el cliente tiene Chrome instalado — no siempre es el caso.
+- **Chromium propio de Playwright (`canal=None`, el default).** Requiere `playwright install chromium` en el equipo destino (~150MB) — y por lo tanto tener Python ahí, aunque sea momentáneamente, para ese único paso. Es la opción menos práctica cuando el cliente no permite instalar Python.
+
+**Firefox no tiene equivalente.** Playwright no puede manejar el Firefox público que el cliente ya tenga instalado: `playwright.firefox.launch()` necesita su propio build parcheado, que se baja con `playwright install firefox` — no hay un `channel` que apunte al Firefox del sistema. Si el cliente solo tiene Firefox, no hay forma de evitar ese descargable (con Python de por medio para instalarlo).
 
 Para pywinauto (escritorio) y SAP GUI Scripting no hay problema extra: dependen de que la aplicación de escritorio o SAP GUI ya estén instalados en el equipo, que es un requisito del bot de todos modos, empaquetado o no — documentalo en las precondiciones del manual de usuario.
 
@@ -50,7 +53,7 @@ Nombrá el archivo entregado con la versión del release, para que quede trazabl
 No hay un mecanismo automático de distribución. Dos opciones razonables:
 
 1. **Adjuntarlo al release de GitHub**, sobre el tag que ya crea `/release`: `gh release create vX.Y.Z dist/<paquete>-X.Y.Z.exe --title "vX.Y.Z" --notes "..."`. Queda versionado y trazable al commit exacto.
-2. **Copiarlo directo** al equipo del cliente (pendrive, carpeta compartida, lo que use el proyecto), junto con `.env` completado y la carpeta `datos/` si el bot tiene parametrizaciones.
+2. **Copiarlo directo** al equipo del cliente (pendrive, carpeta compartida, lo que use el proyecto), junto con `.env` completado, `recursos/` si el bot lo usa, y `parametros/` solo si la parametrización real es local (si vive en una carpeta de red del cliente, no hace falta copiar nada).
 
 En cualquiera de los dos casos, documentá en `docs/manual-usuario.md` cómo el equipo de mantenimiento reconstruye el `.exe` si hace falta un cambio — ver la sección "Cómo ejecutar la automatización" del manual.
 

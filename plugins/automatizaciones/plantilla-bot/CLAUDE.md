@@ -20,7 +20,8 @@ Todo en español. Identificadores de código **sin tildes ni `ñ`** (`validar_pe
 src/paquete_bot/     Código: principal, configuracion, registro, errores, reintentos, conectores/
 pruebas/             unitarias/ (lógica pura) · integracion/ (conectores con dobles) · e2e/ (marcadas)
 docs/                bitacora · diseno/solucion · manual-usuario · pruebas/casos.toml
-datos/ejemplo/       Parametrizaciones de ejemplo, con datos ficticios
+parametros/ejemplo/  Parametrizaciones de ejemplo, con datos ficticios (la real suele vivir afuera, ver .env.example)
+recursos/            Plantillas y archivos de referencia que el bot usa pero el usuario no edita
 relevamiento/        IGNORADA POR GIT. El documento original vive acá y no se sube nunca
 ```
 
