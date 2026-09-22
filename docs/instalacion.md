@@ -24,7 +24,7 @@ Si el comando queda esperando una respuesta interactiva, ejecutalo desde la term
 Una sola vez por equipo:
 
 ```
-/plugin marketplace add <organizacion>/agentic-coding-config-claude
+/plugin marketplace add https://github.com/crowe-uy/agentic-coding-config-claude.git
 /plugin install automatizaciones
 ```
 
@@ -64,5 +64,12 @@ El comando pide la ruta destino, crea el proyecto, inicializa git con `main` y `
 **"Los controles no se ejecutan."** El plugin hace *no-op* fuera de un repo de automatización: verificá que exista `docs/bitacora.md` en la raíz del proyecto.
 
 **"`python` no se encuentra" al editar un archivo.** Python no está en el PATH del sistema (tenerlo dentro del `.venv` no alcanza). Reinstalá Python marcando "Add to PATH".
+
+**"No se puede cargar el archivo ... porque la ejecución de scripts está deshabilitada"** al activar el `.venv`. Windows bloquea la ejecución de scripts de PowerShell por política de ejecución. Ejecutá:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+.\.venv\Scripts\Activate.ps1
+```
 
 **"El comando `/relevamiento` no encuentra el documento."** El documento debe estar en la carpeta `relevamiento/` del proyecto, en `.docx` o `.pdf`. Esa carpeta está ignorada por git a propósito.
