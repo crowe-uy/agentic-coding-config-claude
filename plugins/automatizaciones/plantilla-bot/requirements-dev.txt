@@ -1,5 +1,5 @@
 # Dependencias de desarrollo y pruebas.
-pytest==8.3.3
+pytest>=9.0.3
 ruff==0.7.4
 
 # Solo si el bot se empaqueta en .exe (ver docs/empaquetado.md del plugin).
