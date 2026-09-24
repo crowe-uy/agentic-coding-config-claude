@@ -1,7 +1,7 @@
 # Dependencias de ejecucion del bot.
 # Descomenta solo las que este bot realmente usa y fija la version.
 
-python-dotenv==1.0.1
+python-dotenv>=1.2.2
 
 # --- Web ---
 # playwright==1.48.0
